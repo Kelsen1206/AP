@@ -29,7 +29,7 @@ public class GameMenu {
     private Button createImageButton(String imagePath) {
         Button button = new Button();
         ImageView imageView = new ImageView(new Image(imagePath));
-        imageView.setFitWidth(250);
+        imageView.setFitWidth(300);
         imageView.setPreserveRatio(true);
         button.setGraphic(imageView);
         button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
