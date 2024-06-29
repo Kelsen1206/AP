@@ -9,6 +9,8 @@ public enum ButtonAction {
     START,
     PAUSE_RESUME,
     ACTION_COMPLETED,
+    OPTION,
+    SETTINGS,
     SELECT,
     GO_UP,
     GO_DOWN,
