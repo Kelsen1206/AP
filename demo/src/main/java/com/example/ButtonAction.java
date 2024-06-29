@@ -11,7 +11,7 @@ public enum ButtonAction {
     ACTION_COMPLETED,
     OPTION,
     SETTINGS,
-    SELECT,
+    NEXT,
     GO_UP,
     GO_DOWN,
     GO_TO_MAIN_MENU_SCREEN,
