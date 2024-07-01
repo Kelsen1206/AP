@@ -5,6 +5,7 @@ public enum GameStatus {
     PAUSED,
     RUNNING,
     MISSION_PASSED,
+    MAIN_SCREEN,
     START_SCREEN,
     LOGIN_SCREEN,
     SIGNUP_SCREEN,
