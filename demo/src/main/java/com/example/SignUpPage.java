@@ -1,9 +1,21 @@
 package com.example;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -13,14 +25,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.scene.text.Font;
-
-import java.io.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import javafx.stage.Stage;
 
 public class SignUpPage {
     private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
@@ -77,6 +83,13 @@ public class SignUpPage {
         passwordInput.setPrefSize(280, 40);
         GridPane.setConstraints(passwordInput, 1, 1);
 
+        // Plain text field for showing password
+        TextField passwordTextInput = new TextField();
+        passwordTextInput.setPrefSize(280, 40);
+        passwordTextInput.setManaged(false); // Initially hidden
+        passwordTextInput.setVisible(false);
+        GridPane.setConstraints(passwordTextInput, 1, 1);
+
         // Confirm Password Label
         Label confirmPasswordLabel = new Label("Confirm Password:");
         confirmPasswordLabel.setStyle("-fx-text-fill : #FFFFFF");
@@ -88,11 +101,53 @@ public class SignUpPage {
         confirmPasswordInput.setPrefSize(280, 40);
         GridPane.setConstraints(confirmPasswordInput, 1, 2);
 
+        // Plain text field for showing confirm password
+        TextField confirmPasswordTextInput = new TextField();
+        confirmPasswordTextInput.setPrefSize(280, 40);
+        confirmPasswordTextInput.setManaged(false); // Initially hidden
+        confirmPasswordTextInput.setVisible(false);
+        GridPane.setConstraints(confirmPasswordTextInput, 1, 2);
+
+        // Show Password Checkbox
+        CheckBox showPasswordCheckBox = new CheckBox("Show Password");
+        showPasswordCheckBox.setStyle("-fx-text-fill : #FFFFFF");
+        showPasswordCheckBox.setFont(errorFont);
+        GridPane.setConstraints(showPasswordCheckBox, 1, 3);
+
+        // Toggle password visibility when checkbox is checked/unchecked
+        showPasswordCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                passwordTextInput.setText(passwordInput.getText());
+                passwordTextInput.setManaged(true);
+                passwordTextInput.setVisible(true);
+                passwordInput.setManaged(false);
+                passwordInput.setVisible(false);
+
+                confirmPasswordTextInput.setText(confirmPasswordInput.getText());
+                confirmPasswordTextInput.setManaged(true);
+                confirmPasswordTextInput.setVisible(true);
+                confirmPasswordInput.setManaged(false);
+                confirmPasswordInput.setVisible(false);
+            } else {
+                passwordInput.setText(passwordTextInput.getText());
+                passwordInput.setManaged(true);
+                passwordInput.setVisible(true);
+                passwordTextInput.setManaged(false);
+                passwordTextInput.setVisible(false);
+
+                confirmPasswordInput.setText(confirmPasswordTextInput.getText());
+                confirmPasswordInput.setManaged(true);
+                confirmPasswordInput.setVisible(true);
+                confirmPasswordTextInput.setManaged(false);
+                confirmPasswordTextInput.setVisible(false);
+            }
+        });
+
         // Error message label
         Label errorMessage = new Label();
         errorMessage.setStyle("-fx-text-fill : #FFFFFF;");
         errorMessage.setFont(errorFont);
-        GridPane.setConstraints(errorMessage, 1, 3);
+        GridPane.setConstraints(errorMessage, 1, 4);
 
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
@@ -103,19 +158,23 @@ public class SignUpPage {
         signUpButton.setFont(errorFont);
         signUpButton.setOnAction(e -> {
             String username = usernameInput.getText();
-            String password = passwordInput.getText();
-            String confirmPassword = confirmPasswordInput.getText();
+            String password = showPasswordCheckBox.isSelected() ? passwordTextInput.getText() : passwordInput.getText();
+            String confirmPassword = showPasswordCheckBox.isSelected() ? confirmPasswordTextInput.getText() : confirmPasswordInput.getText();
             
             if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 errorMessage.setText("All fields must be filled.");
             } else if (!password.equals(confirmPassword)) {
-                errorMessage.setText("Password do not match.");
+                errorMessage.setText("Passwords do not match.");
             } else if(userData.containsKey(username)) {
                 errorMessage.setText("Username already exists.");
             } else{
                 errorMessage.setText("Sign up successful.");
                 userData.put(username, encryptPassword(password));
                 saveUserData();
+                game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
+                gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));
+                GameMenu gameMenu = new GameMenu(game, stage);
+                gameMenu.showMenu();
             }
         });
 
@@ -136,7 +195,7 @@ public class SignUpPage {
         VBox vbox = new VBox(20);  // 20 is the spacing between grid and buttons
         vbox.setAlignment(Pos.CENTER);  // Center the VBox content
 
-        grid.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, confirmPasswordLabel, confirmPasswordInput, errorMessage);
+        grid.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, passwordTextInput, confirmPasswordLabel, confirmPasswordInput, confirmPasswordTextInput, showPasswordCheckBox, errorMessage);
 
         vbox.getChildren().addAll(grid, buttonBox);
 

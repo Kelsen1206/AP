@@ -22,23 +22,19 @@ public class GameMenu {
     public void showMenu() {
         GamePane gamePane = new GamePane(new Image(path + "background2.png"));
 
-        VBox menuBox = new VBox(20);
+        VBox menuBox = new VBox(0);
         menuBox.setAlignment(Pos.CENTER);
 
         // Buttons
         Button loginButton = createImageButton(path + "Login button.png");
         Button signUpButton = createImageButton(path + "Signup button.png");
         Button userGuideButton = createImageButton(path + "Userguide button.png");
-        Button settingsButton = createImageButton(path + "Settings.png");
+        Button settingsButton = createImageButton(path + "Settings button.png");
 
         loginButton.setOnAction(event -> showLoginPage());
         signUpButton.setOnAction(event -> showSignUpPage());
-        userGuideButton.setOnAction(event -> {
-            // Handle user guide action
-        });
-        settingsButton.setOnAction(event -> {
-            // Handle settings action
-        });
+        userGuideButton.setOnAction(event -> showUserGuidePage());
+        settingsButton.setOnAction(event -> showSettingsPage());
 
         menuBox.getChildren().addAll(loginButton, signUpButton, userGuideButton, settingsButton);
 
@@ -74,5 +70,17 @@ public class GameMenu {
         GamePane gamePane = new GamePane(new Image(path + "sign up page.png"));
         SignUpPage signUpPage = new SignUpPage(gamePane, game, stage);
         signUpPage.show();
+    }
+
+    private void showUserGuidePage() {
+        GamePane gamePane = new GamePane(new Image(path + "user guide page.png"));
+        UserGuidePage userGuidePage = new UserGuidePage(gamePane, game, stage);
+        userGuidePage.show();
+    }
+
+    private void showSettingsPage() {
+        GamePane gamePane = new GamePane(new Image(path + "settings page.png"));
+        SettingsPage settingsPage = new SettingsPage(gamePane, game, stage);
+        settingsPage.show();
     }
 }

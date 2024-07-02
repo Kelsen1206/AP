@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -78,11 +79,41 @@ public class LoginPage {
         passwordInput.setPrefSize(225, 40);
         GridPane.setConstraints(passwordInput, 1, 1);
 
+        // Plain text field for showing password
+        TextField passwordTextInput = new TextField();
+        passwordTextInput.setPrefSize(225, 40);
+        passwordTextInput.setManaged(false); // Initially hidden
+        passwordTextInput.setVisible(false);
+        GridPane.setConstraints(passwordTextInput, 1, 1);
+
+        // Show Password Checkbox
+        CheckBox showPasswordCheckBox = new CheckBox("Show Password");
+        showPasswordCheckBox.setStyle("-fx-text-fill : #FFFFFF");
+        showPasswordCheckBox.setFont(errorFont);
+        GridPane.setConstraints(showPasswordCheckBox, 1, 2);
+
+        // Toggle password visibility when checkbox is checked/unchecked
+        showPasswordCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                passwordTextInput.setText(passwordInput.getText());
+                passwordTextInput.setManaged(true);
+                passwordTextInput.setVisible(true);
+                passwordInput.setManaged(false);
+                passwordInput.setVisible(false);
+            } else {
+                passwordInput.setText(passwordTextInput.getText());
+                passwordInput.setManaged(true);
+                passwordInput.setVisible(true);
+                passwordTextInput.setManaged(false);
+                passwordTextInput.setVisible(false);
+            }
+        });
+
         // Error message label
         Label errorMessage = new Label();
         errorMessage.setStyle("-fx-text-fill : #FFFFFF;");
         errorMessage.setFont(errorFont);
-        GridPane.setConstraints(errorMessage, 1, 2);
+        GridPane.setConstraints(errorMessage, 1, 3);
 
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
@@ -93,11 +124,10 @@ public class LoginPage {
         loginButton.setFont(errorFont);
         loginButton.setOnAction(e -> {
             String username = usernameInput.getText();
-            String password = passwordInput.getText();
+            String password = showPasswordCheckBox.isSelected() ? passwordTextInput.getText() : passwordInput.getText();
             if (validateLogin(username, password)) {
-                errorMessage.setText("Successfully login.");
-                // Handle successful login
-                // Start game
+                IntroductionPage introductionPage = new IntroductionPage(game, stage);
+                introductionPage.show();
             } else {
                 errorMessage.setText("Invalid username or password.");
             }
@@ -120,7 +150,7 @@ public class LoginPage {
         VBox vbox = new VBox(20);  // 20 is the spacing between grid and buttons
         vbox.setAlignment(Pos.CENTER);  // Center the VBox content
 
-        grid.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, errorMessage);
+        grid.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, passwordTextInput, showPasswordCheckBox, errorMessage);
 
         vbox.getChildren().addAll(grid, buttonBox);
 

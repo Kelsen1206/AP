@@ -3,7 +3,7 @@ package com.example;
 public enum GameStatus {
     GAME_OVER,
     PAUSED,
-    RUNNING,
+    GAME_RUNNING,
     MISSION_PASSED,
     MAIN_SCREEN,
     START_SCREEN,
