@@ -1,5 +1,14 @@
 package com.example;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,14 +23,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.scene.text.Font;
-
-import java.io.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import javafx.stage.Stage;
 
 public class LoginPage {
     private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
@@ -122,6 +125,8 @@ public class LoginPage {
         Button loginButton = new Button("Login");
         loginButton.setPrefSize(60, 35);
         loginButton.setFont(errorFont);
+        loginButton.setOnMouseEntered(event -> loginButton.setStyle("-fx-cursor: hand;"));
+        loginButton.setOnMouseExited(event -> loginButton.setStyle("-fx-cursor: default;"));
         loginButton.setOnAction(e -> {
             String username = usernameInput.getText();
             String password = showPasswordCheckBox.isSelected() ? passwordTextInput.getText() : passwordInput.getText();
@@ -137,6 +142,8 @@ public class LoginPage {
         Button backButton = new Button("Back");
         backButton.setPrefSize(60, 35);
         backButton.setFont(errorFont);
+        backButton.setOnMouseEntered(event -> backButton.setStyle("-fx-cursor: hand;"));
+        backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
             gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));

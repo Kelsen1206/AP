@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 
 public class GamePane extends StackPane {
     private ImageView backgroundImageView;
+    private double backgroundWidth;
     private VBox loginComponents;
 
     public GamePane(Image backgroundImage) {
@@ -26,6 +27,24 @@ public class GamePane extends StackPane {
         backgroundImageView.setFitWidth(1000);
         backgroundImageView.setFitHeight(650);
         backgroundImageView.setPreserveRatio(false);
+    }
+
+    public void setLevelBackgroundImage(Image backgroundImage) {
+        backgroundImageView.setImage(backgroundImage);
+        backgroundWidth = backgroundImage.getWidth();
+        backgroundImageView.setFitWidth(backgroundWidth);
+        backgroundImageView.setFitHeight(650);
+        backgroundImageView.setPreserveRatio(true);
+    }
+
+    public void updateBackgroundPosition(double xOffset) {
+        double newX = -xOffset;
+        if (newX < -(backgroundWidth - 1000)) {
+            newX = -(backgroundWidth - 1000);  // Prevent moving beyond the right edge
+        } else if (newX > 0) {
+            newX = 0;  // Prevent moving beyond the left edge
+        }
+        backgroundImageView.setTranslateX(newX);
     }
 
     public void setLoginComponents(VBox loginComponents) {

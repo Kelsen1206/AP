@@ -38,6 +38,8 @@ public class UserGuidePage {
         Button backButton = new Button("Back");
         backButton.setPrefSize(60, 35);
         backButton.setFont(errorFont);
+        backButton.setOnMouseEntered(event -> backButton.setStyle("-fx-cursor: hand;"));
+        backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
             gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));

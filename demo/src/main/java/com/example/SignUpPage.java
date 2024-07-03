@@ -156,6 +156,8 @@ public class SignUpPage {
         Button signUpButton = new Button("Sign Up");
         signUpButton.setPrefSize(80, 35);
         signUpButton.setFont(errorFont);
+        signUpButton.setOnMouseEntered(event -> signUpButton.setStyle("-fx-cursor: hand;"));
+        signUpButton.setOnMouseExited(event -> signUpButton.setStyle("-fx-cursor: default;"));
         signUpButton.setOnAction(e -> {
             String username = usernameInput.getText();
             String password = showPasswordCheckBox.isSelected() ? passwordTextInput.getText() : passwordInput.getText();
@@ -182,6 +184,8 @@ public class SignUpPage {
         Button backButton = new Button("Back");
         backButton.setPrefSize(60, 35);
         backButton.setFont(errorFont);
+        backButton.setOnMouseEntered(event -> backButton.setStyle("-fx-cursor: hand;"));
+        backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
             gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));

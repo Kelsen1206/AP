@@ -119,7 +119,10 @@ public class IntroductionPage {
     }
 
     private void startGame() {
-        // Start your game here
         game.setGameStatus(GameStatus.GAME_RUNNING);
+        TechCityLevel techCityLevel = new TechCityLevel(game, stage);
+        techCityLevel.createLevel();
+        techCityLevel.show();
     }
+    
 }

@@ -54,8 +54,8 @@ public class GameMenu {
         button.setGraphic(imageView);
         button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
 
-        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-border-color: transparent;"));
-        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;"));
+        button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-border-color: transparent; -fx-cursor: hand;"));
+        button.setOnMouseExited(event -> button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;"));
 
         return button;
     }
