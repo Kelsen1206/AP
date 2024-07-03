@@ -18,7 +18,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class SettingsPage {
-    private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
+    private final String imagePath = "/images/";
+    private final String fontPath = "/fonts/";
     private GamePane gamePane;
     private Game game;
     private Stage stage;
@@ -33,14 +34,14 @@ public class SettingsPage {
     }
 
     public void show() {
-        Font font = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 16);
-        Font errorFont = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 8);
+        Font font = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 16);
+        Font errorFont = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 8);
 
         StackPane settingsPane = new StackPane();
         settingsPane.setPrefSize(1000, 650);  // Set preferred size for the StackPane
 
         // Background image
-        ImageView settingsPage = new ImageView(new Image("file:" + path + "images\\settings page.png"));
+        ImageView settingsPage = new ImageView(new Image(getClass().getResourceAsStream(imagePath + "settings page.png")));
         settingsPage.setFitWidth(1000);
         settingsPage.setFitHeight(650);
 
@@ -75,7 +76,7 @@ public class SettingsPage {
         backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
-            gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));
+            gamePane.setBackgroundImage(new Image(getClass().getResourceAsStream(imagePath + "background2.png")));
             GameMenu gameMenu = new GameMenu(game, stage);
             gameMenu.showMenu();
         }); // Handle going back to the previous scene

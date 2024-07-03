@@ -1,8 +1,7 @@
 package com.example;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,8 +26,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class LoginPage {
-    private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
-    private final String userDataFile = path + "user_data.bin";
+    private final String imagePath = "/images/";
+    private final String fontPath = "/fonts/";
+    private final String userDataFilePath = "/user_data.bin";
     private GamePane gamePane;
     private Game game;
     private Stage stage;
@@ -42,14 +42,14 @@ public class LoginPage {
     }
 
     public void show() {
-        Font font = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 16);
-        Font errorFont = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 8);
+        Font font = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 16);
+        Font errorFont = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 8);
 
         StackPane loginPane = new StackPane();
         loginPane.setPrefSize(1000, 650);  // Set preferred size for the StackPane
 
         // Background image
-        ImageView loginPage = new ImageView(new Image("file:" + path + "images\\login page.png"));
+        ImageView loginPage = new ImageView(new Image(getClass().getResourceAsStream(imagePath + "login page.png")));
         loginPage.setFitWidth(1000);
         loginPage.setFitHeight(650);
 
@@ -146,7 +146,7 @@ public class LoginPage {
         backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
-            gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));
+            gamePane.setBackgroundImage(new Image(getClass().getResourceAsStream(imagePath + "background2.png")));
             GameMenu gameMenu = new GameMenu(game, stage);
             gameMenu.showMenu();
         }); // Handle going back to the previous scene
@@ -194,17 +194,15 @@ public class LoginPage {
 
     private Map<String, String> loadUserData() {
         Map<String, String> data = new HashMap<>();
-        File file = new File(userDataFile);
-        System.out.println("Loading user data from: " + userDataFile); // Debug statement
-        if (file.exists()) {
-            System.out.println("File exists. Reading data..."); // Debug statement
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+        try (InputStream is = getClass().getResourceAsStream(userDataFilePath);
+             ObjectInputStream ois = is != null ? new ObjectInputStream(is) : null) {
+            if (ois != null) {
                 data = (Map<String, String>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            } else {
+                System.out.println("Could not find the user data file: " + userDataFilePath);
             }
-        } else {
-            System.out.println("File does not exist."); // Debug statement
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return data;
     }

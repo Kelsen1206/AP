@@ -19,7 +19,8 @@ public class Game extends Application {
     private GameStatus gameStatus;
     private ImageLoader imageLoader;
     private Stage primaryStage;
-    private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\images\\";
+    private final String imagePath = "/images/";
+    private final String fontPath = "/fonts/";
     
     @Override
     public void start(Stage primaryStage){
@@ -44,10 +45,10 @@ public class Game extends Application {
 
     private void showMainScreen(){
         try {
-            Image background1 = imageLoader.loadImage(path + "background1.png");
+            Image background1 = imageLoader.loadImage(imagePath + "background1.png");
             GamePane gamePane = new GamePane(background1);
 
-            Font messageFont = Font.loadFont("file:" + path + "..\\fonts\\ARCADE_N.ttf", 16);
+            Font messageFont = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 16);
             Label messageLabel = new Label("Press any key to enter");
             messageLabel.setFont(messageFont);
             messageLabel.setStyle("-fx-text-fill: #FFFFFF;");

@@ -29,8 +29,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class SignUpPage {
-    private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
-    private final String userDataFile = path + "user_data.bin";
+    private final String imagePath = "/images/";
+    private final String fontPath = "/fonts/";
+    private final String userDataFilePath = "C:/Users/kelse/OneDrive/Desktop/Advance Programming asgn/demo/src/main/resources/user_data.bin";
     private GamePane gamePane;
     private Game game;
     private Stage stage;
@@ -44,13 +45,14 @@ public class SignUpPage {
     }
 
     public void show() {
-        Font font = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 16);
-        Font errorFont = Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 8);
+        Font font = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 16);
+        Font errorFont = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 8);
+
         StackPane signUpPane = new StackPane();
         signUpPane.setPrefSize(1000, 650);  // Set preferred size for the StackPane
 
         // Background image
-        ImageView signUpPage = new ImageView(new Image("file:" + path + "images\\sign up page.png"));
+        ImageView signUpPage = new ImageView(new Image(getClass().getResourceAsStream(imagePath + "sign up page.png")));
         signUpPage.setFitWidth(1000);
         signUpPage.setFitHeight(650);
 
@@ -174,7 +176,7 @@ public class SignUpPage {
                 userData.put(username, encryptPassword(password));
                 saveUserData();
                 game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
-                gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));
+                gamePane.setBackgroundImage(new Image(getClass().getResourceAsStream(imagePath + "background2.png")));
                 GameMenu gameMenu = new GameMenu(game, stage);
                 gameMenu.showMenu();
             }
@@ -188,7 +190,7 @@ public class SignUpPage {
         backButton.setOnMouseExited(event -> backButton.setStyle("-fx-cursor: default;"));
         backButton.setOnAction(e -> {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
-            gamePane.setBackgroundImage(new Image("file:" + path + "images\\background2.png"));
+            gamePane.setBackgroundImage(new Image(getClass().getResourceAsStream(imagePath + "background2.png")));
             GameMenu gameMenu = new GameMenu(game, stage);
             gameMenu.showMenu();
         }); // Handle going back to the previous scene
@@ -226,43 +228,24 @@ public class SignUpPage {
         }
     }
 
-    private Map<String, String> loadUserData() {
-        Map<String, String> data = new HashMap<>();
-        File file = new File(userDataFile);
-        System.out.println("Loading user data from: " + userDataFile); // Debug statement
-        if (file.exists()) {
-            System.out.println("File exists. Reading data..."); // Debug statement
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                data = (Map<String, String>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("File does not exist. Creating new file..."); // Debug statement
-            try {
-                File parentDir = file.getParentFile();
-                if (parentDir != null && !parentDir.exists()) {
-                    System.out.println("Creating parent directories..."); // Debug statement
-                    parentDir.mkdirs();
-                }
-                if (file.createNewFile()) {
-                    System.out.println("user_data.bin file created successfully.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return data;
-    }
-
     private void saveUserData() {
-        System.out.println("Saving user data to: " + userDataFile); // Debug statement
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userDataFile))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userDataFilePath))) {
             oos.writeObject(userData);
-            System.out.println("User data saved successfully."); // Debug statement
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private Map<String, String> loadUserData() {
+        File file = new File(userDataFilePath);
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                return (Map<String, String>) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return new HashMap<>();
     }
 }
 

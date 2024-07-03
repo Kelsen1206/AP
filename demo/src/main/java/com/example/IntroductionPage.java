@@ -15,16 +15,17 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class IntroductionPage {
-    private final String path = "C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\";
+    private final String imagePath = "/images/";
+    private final String fontPath = "/fonts/";
     private Game game;
     private Stage stage;
     private int currentIntroIndex = 0;
     private final String[] introImages = {
-        "images\\intro1.png",
-        "images\\intro2.png",
-        "images\\intro3.png",
-        "images\\intro4.png",
-        "images\\intro5.png"
+        "intro1.png",
+        "intro2.png",
+        "intro3.png",
+        "intro4.png",
+        "intro5.png"
     };
     private final String[] introTexts = {
         "Hello, everyone!\nI'm Quacky, I need your help to save my friends and restore the balance in Quackland.",
@@ -54,7 +55,7 @@ public class IntroductionPage {
 
     private void showNextIntro() {
         if (currentIntroIndex < introImages.length) {
-            Image introImage = new Image("file:" + path + introImages[currentIntroIndex]);
+            Image introImage = new Image(getClass().getResourceAsStream(imagePath + introImages[currentIntroIndex]));
             ImageView introImageView = new ImageView(introImage);
             introImageView.setFitWidth(1000);
             introImageView.setFitHeight(650);
@@ -64,7 +65,7 @@ public class IntroductionPage {
 
             // Add dialog text
             Text dialogText = new Text();
-            dialogText.setFont(Font.loadFont("file:" + path + "fonts\\ARCADE_N.ttf", 18));
+            dialogText.setFont(Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 18));
             dialogText.setFill(javafx.scene.paint.Color.BLACK);
             dialogText.setWrappingWidth(500); // Adjust this value as needed
             dialogText.setTextAlignment(TextAlignment.LEFT);
@@ -89,7 +90,7 @@ public class IntroductionPage {
 
             // Create an ImageView for the "Next" button
             Button nextButton = new Button();
-            Image nextButtonImage = new Image("file:" + path + "images\\next button.png"); // Ensure this image exists
+            Image nextButtonImage = new Image(getClass().getResourceAsStream(imagePath + "next button.png")); // Ensure this image exists
             ImageView nextButtonImageView = new ImageView(nextButtonImage);
             nextButtonImageView.setFitWidth(175);
             nextButtonImageView.setPreserveRatio(true);
