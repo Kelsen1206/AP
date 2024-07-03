@@ -1,7 +1,5 @@
 package com.example;
 
-import java.nio.file.Paths;
-
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -15,13 +13,15 @@ public abstract class BaseLevel {
     public BaseLevel(Game game, Stage stage) {
         this.game = game;
         this.stage = stage;
-        this.gamePane = new GamePane(null);  // Initialized with null
+        // Create a blank image for temporary initialization
+        Image blankImage = new Image("file:blank.png");
+        this.gamePane = new GamePane(blankImage);  // Initialize with a blank image
         this.scene = new Scene(gamePane, 1000, 650);
     }
 
     protected void setBackgroundImage(String imagePath) {
         try {
-            String formattedPath = Paths.get(imagePath).toUri().toString();
+            String formattedPath = getClass().getResource(imagePath).toExternalForm();
             Image backgroundImage = new Image(formattedPath);
             gamePane.setBackgroundImage(backgroundImage);
         } catch (Exception e) {
@@ -31,7 +31,7 @@ public abstract class BaseLevel {
 
     protected void setLevelBackgroundImage(String imagePath) {
         try {
-            String formattedPath = Paths.get(imagePath).toUri().toString();
+            String formattedPath = getClass().getResource(imagePath).toExternalForm();
             Image backgroundImage = new Image(formattedPath);
             gamePane.setLevelBackgroundImage(backgroundImage);
         } catch (Exception e) {

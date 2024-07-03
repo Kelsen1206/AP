@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -17,6 +16,7 @@ public class TechCityLevel extends BaseLevel {
     private double characterY = 0;
     private ImageView characterImageView;
     private StackPane levelPane;
+    private ImageLoader imageLoader;
 
     public TechCityLevel(Game game, Stage stage) {
         super(game, stage);
@@ -24,13 +24,12 @@ public class TechCityLevel extends BaseLevel {
 
     @Override
     public void createLevel() {
-        // Set background image
-        setLevelBackgroundImage(getClass().getResource(imagePath + "TechCity.png").toExternalForm());
+        setLevelBackgroundImage(imagePath + "TechCity.png");
 
         levelPane = new StackPane();
 
         // Add character image
-        Image characterImage = new Image(getClass().getResourceAsStream(imagePath + "Quacky.png")); // Replace with your character image path
+        Image characterImage = new Image(getClass().getResourceAsStream(imagePath + "Quacky.png"));
         characterImageView = new ImageView(characterImage);
         characterImageView.setFitWidth(50);
         characterImageView.setFitHeight(50);
