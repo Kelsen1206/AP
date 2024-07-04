@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GameMenu {
-    private final String path = "file:C:\\Users\\kelse\\OneDrive\\Desktop\\Advance Programming asgn\\demo\\src\\main\\resources\\images\\";
     private Game game;
     private Stage stage;
 
@@ -18,18 +17,18 @@ public class GameMenu {
         this.game = game;
         this.stage = stage;
     }
-    
+
     public void showMenu() {
-        GamePane gamePane = new GamePane(new Image(path + "background2.png"));
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/background2.png").toString()));
 
         VBox menuBox = new VBox(0);
         menuBox.setAlignment(Pos.CENTER);
 
         // Buttons
-        Button loginButton = createImageButton(path + "Login button.png");
-        Button signUpButton = createImageButton(path + "Signup button.png");
-        Button userGuideButton = createImageButton(path + "Userguide button.png");
-        Button settingsButton = createImageButton(path + "Settings button.png");
+        Button loginButton = createImageButton("/images/Login button.png");
+        Button signUpButton = createImageButton("/images/Signup button.png");
+        Button userGuideButton = createImageButton("/images/Userguide button.png");
+        Button settingsButton = createImageButton("/images/Settings button.png");
 
         loginButton.setOnAction(event -> showLoginPage());
         signUpButton.setOnAction(event -> showSignUpPage());
@@ -48,7 +47,7 @@ public class GameMenu {
 
     private Button createImageButton(String imagePath) {
         Button button = new Button();
-        ImageView imageView = new ImageView(new Image(imagePath));
+        ImageView imageView = new ImageView(new Image(getClass().getResource(imagePath).toString()));
         imageView.setFitWidth(300);
         imageView.setPreserveRatio(true);
         button.setGraphic(imageView);
@@ -61,25 +60,25 @@ public class GameMenu {
     }
 
     private void showLoginPage() {
-        GamePane gamePane = new GamePane(new Image(path + "login page.png"));
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/login page.png").toString()));
         LoginPage loginPage = new LoginPage(gamePane, game, stage);
         loginPage.show();
     }
 
     private void showSignUpPage() {
-        GamePane gamePane = new GamePane(new Image(path + "sign up page.png"));
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/sign up page.png").toString()));
         SignUpPage signUpPage = new SignUpPage(gamePane, game, stage);
         signUpPage.show();
     }
 
     private void showUserGuidePage() {
-        GamePane gamePane = new GamePane(new Image(path + "user guide page.png"));
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/user guide page.png").toString()));
         UserGuidePage userGuidePage = new UserGuidePage(gamePane, game, stage);
         userGuidePage.show();
     }
 
     private void showSettingsPage() {
-        GamePane gamePane = new GamePane(new Image(path + "settings page.png"));
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/settings page.png").toString()));
         SettingsPage settingsPage = new SettingsPage(gamePane, game, stage);
         settingsPage.show();
     }
