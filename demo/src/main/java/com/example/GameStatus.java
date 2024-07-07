@@ -11,5 +11,6 @@ public enum GameStatus {
     SIGNUP_SCREEN,
     ABOUT_SCREEN,
     SETTING_SCREEN,
-    MAIN_MENU_SCREEN
+    MAIN_MENU_SCREEN,
+    INTRO_SCREEN
 }

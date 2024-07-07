@@ -7,8 +7,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-
-
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
@@ -23,12 +21,16 @@ public class Game extends Application {
     private Stage primaryStage;
     private final String imagePath = "/images/";
     private final String fontPath = "/fonts/";
-    
+    private Quacky quacky;
+    private GamePane gamePane;
+
     @Override
     public void start(Stage primaryStage){
         this.primaryStage = primaryStage;
         imageLoader = new ImageLoader();
         gameStatus = GameStatus.MAIN_SCREEN;
+
+        quacky = new Quacky(50,500, 50, 950);
 
         showMainScreen();
     }
@@ -48,7 +50,7 @@ public class Game extends Application {
     private void showMainScreen(){
         try {
             Image background1 = imageLoader.loadImage(imagePath + "background1.png");
-            GamePane gamePane = new GamePane(background1);
+            gamePane = new GamePane(background1);
 
             Font messageFont = Font.loadFont(getClass().getResourceAsStream(fontPath + "ARCADE_N.ttf"), 16);
             Label messageLabel = new Label("Press any key to enter");
@@ -87,9 +89,10 @@ public class Game extends Application {
         fadeTransition.play();
 
         Runnable showMenuCallback = this::showGameMenu;
-        InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback);
+        InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback, quacky);
 
         gameScene.setOnKeyPressed(inputHandler::keyPressed);
+        gameScene.setOnKeyReleased(inputHandler::keyReleased);
         return gameScene;
     }
 

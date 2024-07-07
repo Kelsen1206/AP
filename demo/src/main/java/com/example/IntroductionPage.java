@@ -24,6 +24,7 @@ public class IntroductionPage {
     private Stage stage;
     private ImageLoader imageLoader;
     private int currentIntroIndex = 0;
+    private GameStatus gameStatus;
     private final String[] introImages = {
         "intro1.png",
         "intro2.png",
@@ -51,6 +52,7 @@ public class IntroductionPage {
     public IntroductionPage(Game game, Stage stage) {
         this.game = game;
         this.stage = stage;
+        this.gameStatus = GameStatus.INTRO_SCREEN;
     }
 
     public void show() throws IOException {
@@ -136,5 +138,4 @@ public class IntroductionPage {
         techCity.createLevel();
         techCity.show();
     }
-    
 }

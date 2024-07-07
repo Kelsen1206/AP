@@ -28,14 +28,4 @@ public class GamePane extends StackPane {
         backgroundImageView.setFitHeight(650);
         backgroundImageView.setPreserveRatio(false);
     }
-
-    public void updateBackgroundPosition(double xOffset) {
-        double newX = -xOffset;
-        if (newX < -(backgroundWidth - 1000)) {
-            newX = -(backgroundWidth - 1000);  // Prevent moving beyond the right edge
-        } else if (newX > 0) {
-            newX = 0;  // Prevent moving beyond the left edge
-        }
-        backgroundImageView.setTranslateX(newX);
-    }
 }
