@@ -68,11 +68,9 @@ public class Quacky {
     public void update() {
         // Update horizontal position
         x += velocityX;
-        if (x < leftBoundary) {
-            x = leftBoundary;
-        } else if (x > rightBoundary) {
-            x = rightBoundary;
-        }
+
+        // Ensure Quacky stays within the background bounds
+        x = Math.max(0, Math.min(x, rightBoundary - sprite.getFitWidth()));
 
         // Update vertical position
         if (isJumping) {
@@ -87,9 +85,12 @@ public class Quacky {
             }
         }
 
-        // Ensure Quacky's position within the game world is updated correctly
         sprite.setTranslateX(x);
         sprite.setTranslateY(y);
+    }
+
+    public double getCenterX() {
+        return x + sprite.getFitWidth() / 2;
     }
 
     private void updateSpriteDirection() {

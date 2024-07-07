@@ -1,8 +1,6 @@
 package com.example;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -25,9 +23,8 @@ public class TechCity {
     private Sprite sprite;
     private Pane gameWorld;
     private Quacky quacky;
-    private final double leftScreenMargin = 0.0;
-    private final double rightScreenMargin = 950.0;
-    private double backgroundOffsetX = 0;
+    private final double viewWidth = 375;
+    private Camera camera;
     int[][] mapData = {};
 
     public TechCity(Game game, Stage stage, ImageLoader imageLoader) throws FileNotFoundException {
@@ -39,6 +36,17 @@ public class TechCity {
         this.gameWorld = new Pane();
         this.gamePane = new GamePane(backgroundImage.getImage());
         this.scene = new Scene(gamePane, 1000, 650);
+        this.camera = new Camera();
+    }
+
+    private void updateCamera() {
+        double quackyCenterX = quacky.getX() + quacky.getSprite().getFitWidth() / 2;
+        double newCameraX = quackyCenterX - viewWidth / 2;
+
+        // Ensure the camera doesn't move past the edges of the background
+        newCameraX = Math.max(0, Math.min(newCameraX, backgroundWidth - viewWidth));
+
+        camera.setX(newCameraX);
     }
 
     public void createLevel() throws IOException {
@@ -81,7 +89,7 @@ public class TechCity {
         gameWorld.getChildren().addAll(backgroundImage, gridPane);
         gameWorld.setPrefSize(backgroundWidth, 650);
 
-        quacky = new Quacky(leftScreenMargin, 500, leftScreenMargin, rightScreenMargin); // Starting position
+        quacky = new Quacky(200, 500, 0, backgroundWidth); // Starting position
         quacky.getSprite().setVisible(true);
         quacky.getSprite().setViewOrder(-1);
         gameWorld.getChildren().add(quacky.getSprite());
@@ -98,37 +106,25 @@ public class TechCity {
         AnimationTimer gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                quacky.update();
-                updateBackground();
+                update();
             }
         };
         gameLoop.start();
     }
 
-    private void printSceneGraph(Node node, int depth) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < depth; i++) {
-            sb.append("  ");
-        }
-        sb.append(node.getClass().getSimpleName());
-        System.out.println(sb.toString());
+    private void updateBackground() {
+        // Update Quacky's screen position
+        double quackyScreenX = quacky.getX() - camera.getX();
+        quacky.getSprite().setTranslateX(quackyScreenX);
 
-        if (node instanceof Parent) {
-            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
-                printSceneGraph(child, depth + 1);
-            }
-        }
+        // Move the background image
+        backgroundImage.setTranslateX(-camera.getX());
     }
 
-    private void updateBackground() {
-        double quackyX = quacky.getX();
-        if (quackyX > rightScreenMargin && backgroundOffsetX < backgroundWidth - 1000) {
-            backgroundOffsetX += quacky.getVelocityX();
-        } else if (quackyX < leftScreenMargin && backgroundOffsetX > 0) {
-            backgroundOffsetX += quacky.getVelocityX();
-        }
-
-        gameWorld.setTranslateX(-backgroundOffsetX);
+    public void update() {
+        quacky.update();
+        updateCamera();
+        updateBackground();
     }
 
     public void show() {
