@@ -29,14 +29,6 @@ public class GamePane extends StackPane {
         backgroundImageView.setPreserveRatio(false);
     }
 
-    public void setLevelBackgroundImage(Image backgroundImage) {
-        backgroundImageView.setImage(backgroundImage);
-        backgroundWidth = backgroundImage.getWidth();
-        backgroundImageView.setFitWidth(backgroundWidth);
-        backgroundImageView.setFitHeight(650);
-        backgroundImageView.setPreserveRatio(true);
-    }
-
     public void updateBackgroundPosition(double xOffset) {
         double newX = -xOffset;
         if (newX < -(backgroundWidth - 1000)) {
@@ -45,20 +37,5 @@ public class GamePane extends StackPane {
             newX = 0;  // Prevent moving beyond the left edge
         }
         backgroundImageView.setTranslateX(newX);
-    }
-
-    public void setLoginComponents(VBox loginComponents) {
-        this.getChildren().remove(this.loginComponents);
-        this.loginComponents = loginComponents;
-        this.loginComponents.setVisible(false);
-        this.getChildren().add(this.loginComponents);
-    }
-
-    public void showLoginComponents() {
-        loginComponents.setVisible(true);
-    }
-
-    public void hideLoginComponents() {
-        loginComponents.setVisible(false);
     }
 }

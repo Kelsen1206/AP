@@ -14,11 +14,15 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class IntroductionPage {
     private final String imagePath = "/images/";
     private final String fontPath = "/fonts/";
     private Game game;
     private Stage stage;
+    private ImageLoader imageLoader;
     private int currentIntroIndex = 0;
     private final String[] introImages = {
         "intro1.png",
@@ -49,11 +53,11 @@ public class IntroductionPage {
         this.stage = stage;
     }
 
-    public void show() {
+    public void show() throws IOException {
         showNextIntro();
     }
 
-    private void showNextIntro() {
+    private void showNextIntro() throws IOException {
         if (currentIntroIndex < introImages.length) {
             Image introImage = new Image(getClass().getResourceAsStream(imagePath + introImages[currentIntroIndex]));
             ImageView introImageView = new ImageView(introImage);
@@ -102,7 +106,13 @@ public class IntroductionPage {
 
             nextButton.setOnMouseClicked(e -> {
                 currentIntroIndex++;
-                showNextIntro();
+                try {
+                    showNextIntro();
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             });
 
             // Positioning the next button (adjust the coordinates as needed)
@@ -119,11 +129,12 @@ public class IntroductionPage {
         }
     }
 
-    private void startGame() {
+    private void startGame() throws IOException {
+        imageLoader = new ImageLoader();
         game.setGameStatus(GameStatus.GAME_RUNNING);
-        TechCityLevel techCityLevel = new TechCityLevel(game, stage);
-        techCityLevel.createLevel();
-        techCityLevel.show();
+        TechCity techCity = new TechCity(game, stage, imageLoader);
+        techCity.createLevel();
+        techCity.show();
     }
     
 }

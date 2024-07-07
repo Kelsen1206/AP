@@ -7,6 +7,8 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+
+
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
@@ -63,20 +65,7 @@ public class Game extends Application {
             root.getChildren().addAll(gamePane, messageBox);
             StackPane.setAlignment(messageBox, Pos.BOTTOM_CENTER);
 
-            Scene gameScene = new Scene(root, 1000, 650);
-
-            // Fade transition for the message label
-            FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), messageLabel);
-            fadeTransition.setFromValue(1.0);
-            fadeTransition.setToValue(0.1);
-            fadeTransition.setCycleCount(FadeTransition.INDEFINITE);
-            fadeTransition.setAutoReverse(true);
-            fadeTransition.play();
-
-            Runnable showMenuCallback = this::showGameMenu;
-            InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback);
-
-            gameScene.setOnKeyPressed(inputHandler::keyPressed);
+            Scene gameScene = getScene(root, messageLabel, gamePane);
 
             primaryStage.setTitle("The Lost Element");
             primaryStage.setScene(gameScene);
@@ -84,6 +73,24 @@ public class Game extends Application {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private Scene getScene(StackPane root, Label messageLabel, GamePane gamePane) {
+        Scene gameScene = new Scene(root, 1000, 650);
+
+        // Fade transition for the message label
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), messageLabel);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.1);
+        fadeTransition.setCycleCount(FadeTransition.INDEFINITE);
+        fadeTransition.setAutoReverse(true);
+        fadeTransition.play();
+
+        Runnable showMenuCallback = this::showGameMenu;
+        InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback);
+
+        gameScene.setOnKeyPressed(inputHandler::keyPressed);
+        return gameScene;
     }
 
     private void showGameMenu() {

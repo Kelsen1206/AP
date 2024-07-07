@@ -1,5 +1,6 @@
 package com.example;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -132,7 +133,11 @@ public class LoginPage {
             String password = showPasswordCheckBox.isSelected() ? passwordTextInput.getText() : passwordInput.getText();
             if (validateLogin(username, password)) {
                 IntroductionPage introductionPage = new IntroductionPage(game, stage);
-                introductionPage.show();
+                try {
+                    introductionPage.show();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
                 errorMessage.setText("Invalid username or password.");
             }
