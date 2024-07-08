@@ -11,9 +11,10 @@ public class Quacky {
     private boolean isJumping;
     private boolean isFacingRight;
     private int health;
-    private final double SPEED = 5.0;
+    private final double SPEED = 8.0;
     private final double JUMP_VELOCITY = -15.0;
-    private final double GRAVITY = 0.8;
+    private final double GRAVITY = 1.0;
+    private long lastJumpTime = 0;
     private double leftBoundary;
     private double rightBoundary;
 
@@ -58,33 +59,36 @@ public class Quacky {
         velocityX = 0;
     }
 
+    public void land(double groundY) {
+        isJumping = false;
+        velocityY = 0;
+        y = groundY - sprite.getFitHeight();
+    }
+
+    public void stopJump() {
+        velocityY = 0;
+    }
+
     public void jump() {
-        if (!isJumping) {
+        if (!isJumping && (System.currentTimeMillis() - lastJumpTime > 150)) {
             velocityY = JUMP_VELOCITY;
             isJumping = true;
+            lastJumpTime = System.currentTimeMillis();
         }
     }
 
     public void update() {
         // Update horizontal position
         x += velocityX;
-
-        // Ensure Quacky stays within the background bounds
         x = Math.max(leftBoundary, Math.min(x, rightBoundary - sprite.getFitWidth()));
 
-        // Update vertical position
-        if (isJumping) {
-            y += velocityY;
-            velocityY += GRAVITY;
+        // Apply gravity
+        velocityY += GRAVITY;
+        y += velocityY;
 
-            // Simple ground collision (adjust Y value as needed)
-            if (y > 550) {
-                y = 550;
-                velocityY = 0;
-                isJumping = false;
-            }
-        }
+        velocityY = Math.min(velocityY, 20);
 
+        // Update sprite position
         sprite.setTranslateX(x);
         sprite.setTranslateY(y);
     }
@@ -122,6 +126,7 @@ public class Quacky {
 
     public void setX(double x) {
         this.x = x;
+        sprite.setTranslateX(this.x);
     }
 
     public double getY() {
@@ -130,6 +135,7 @@ public class Quacky {
 
     public void setY(double y) {
         this.y = y;
+        sprite.setTranslateY(this.y);
     }
 
     public double getVelocityX() {

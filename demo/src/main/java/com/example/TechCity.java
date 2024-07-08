@@ -1,6 +1,7 @@
 package com.example;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -27,6 +28,8 @@ public class TechCity {
     private Quacky quacky;
     private final double viewWidth = 375;
     private Camera camera;
+    private static final long FRAME_TIME = 16_666_667; // 60 FPS in nanoseconds
+    private long lastUpdateTime = System.nanoTime();
     int[][] mapData = {
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -127,9 +130,17 @@ public class TechCity {
 
         // Start the game loop
         AnimationTimer gameLoop = new AnimationTimer() {
+            private long lastUpdate = 0;
+
             @Override
             public void handle(long now) {
-                update();
+                if (now - lastUpdate >= FRAME_TIME) {
+                    quacky.update();
+                    checkCollisions();
+                    updateCamera();
+                    updateBackground();
+                    lastUpdate = now;
+                }
             }
         };
         gameLoop.start();
@@ -151,14 +162,57 @@ public class TechCity {
         gridPane.setTranslateX(cameraX);
     }
 
-    public void update() {
-        quacky.update();
-        updateCamera();
-        updateBackground();
-    }
-
     public void show() {
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void checkCollisions() {
+        int tileSize = 50; // Adjust this to match your tile size
+        int quackyTileX = (int) (quacky.getX() / tileSize);
+        int quackyTileY = (int) (quacky.getY() / tileSize);
+
+        for (int y = Math.max(0, quackyTileY - 1); y <= Math.min(mapData.length - 1, quackyTileY + 2); y++) {
+            for (int x = Math.max(0, quackyTileX - 1); x <= Math.min(mapData[0].length - 1, quackyTileX + 2); x++) {
+                if (mapData[y][x] != 0) {  // If it's not an empty tile
+                    Rectangle2D tileBounds = new Rectangle2D(
+                            x * tileSize,
+                            y * tileSize,
+                            tileSize,
+                            tileSize
+                    );
+
+                    if (quacky.getBoundingBox().intersects(tileBounds)) {
+                        handleCollision(quacky, tileBounds);
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleCollision(Quacky quacky, Rectangle2D tileBounds) {
+        double overlapLeft = quacky.getX() + quacky.getSprite().getFitWidth() - tileBounds.getMinX();
+        double overlapRight = tileBounds.getMaxX() - quacky.getX();
+        double overlapTop = quacky.getY() + quacky.getSprite().getFitHeight() - tileBounds.getMinY();
+        double overlapBottom = tileBounds.getMaxY() - quacky.getY();
+
+        double minOverlapX = Math.min(overlapLeft, overlapRight);
+        double minOverlapY = Math.min(overlapTop, overlapBottom);
+
+        if (minOverlapX < minOverlapY) {
+            if (overlapLeft < overlapRight) {
+                quacky.setX(tileBounds.getMinX() - quacky.getSprite().getFitWidth());
+            } else {
+                quacky.setX(tileBounds.getMaxX());
+            }
+            quacky.stopMoving(); // Assuming this method exists to stop horizontal movement
+        } else {
+            if (overlapTop < overlapBottom) {
+                quacky.land(tileBounds.getMinY());
+            } else {
+                quacky.setY(tileBounds.getMaxY());
+                quacky.stopJump();
+            }
+        }
     }
 }
