@@ -70,7 +70,7 @@ public class Quacky {
         x += velocityX;
 
         // Ensure Quacky stays within the background bounds
-        x = Math.max(0, Math.min(x, rightBoundary - sprite.getFitWidth()));
+        x = Math.max(leftBoundary, Math.min(x, rightBoundary - sprite.getFitWidth()));
 
         // Update vertical position
         if (isJumping) {
