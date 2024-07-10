@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class TechCity {
@@ -37,7 +36,7 @@ public class TechCity {
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;
-
+    private SettingsMenu settingsMenu;
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -87,7 +86,7 @@ public class TechCity {
         camera.setX(newCameraX);
     }
 
-    public void createLevel() throws IOException {
+    public void createLevel() {
         // Create tile map
         gridPane = new GridPane();
         for (int i = 0; i < mapData.length; i++) {
@@ -204,9 +203,10 @@ public class TechCity {
         gameOverText.setVisible(true);
         gameOverText.setX(20);
         gameOverText.setY(100);
+        gameOverText.toFront();
     }
 
-    private void restartGame() {
+    public void restartGame() {
         quacky.respawn();
         gameOver = false;
         gameOverText.setVisible(false);
@@ -304,4 +304,5 @@ public class TechCity {
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
     }
+
 }

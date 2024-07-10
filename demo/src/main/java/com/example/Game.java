@@ -1,6 +1,7 @@
 package com.example;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -24,9 +25,11 @@ public class Game extends Application {
     private Quacky quacky;
     private GamePane gamePane;
     private SoundManager soundManager;
+    private SettingsMenu settingsMenu;
+    private TechCity techCity;
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) throws FileNotFoundException {
         this.primaryStage = primaryStage;
         imageLoader = new ImageLoader();
         gameStatus = GameStatus.MAIN_SCREEN;
@@ -44,7 +47,7 @@ public class Game extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     public GameStatus getGameStatus(){
         return gameStatus;
     }
@@ -53,7 +56,7 @@ public class Game extends Application {
         this.gameStatus = gameStatus;
     }
 
-    private void showMainScreen(){
+    void showMainScreen(){
         try {
             Image background1 = imageLoader.loadImage(imagePath + "background1.png");
             gamePane = new GamePane(background1);
@@ -103,7 +106,7 @@ public class Game extends Application {
         return gameScene;
     }
 
-    private void showGameMenu() {
+    void showGameMenu() {
         soundManager.stopBackgroundMusic();
 
         GameMenu gameMenu = new GameMenu(this, primaryStage);
@@ -112,5 +115,16 @@ public class Game extends Application {
 
     private void restartGame() {
         gamePane.setGameStatus(GameStatus.GAME_RUNNING);
+    }
+
+    public void initializeTechCityAndSettings() throws IOException {
+        techCity = new TechCity(this, primaryStage, imageLoader);
+        settingsMenu = new SettingsMenu(this, techCity, primaryStage);
+        techCity.createLevel();
+        techCity.show();
+    }
+
+    public void showSettingsMenu() {
+        settingsMenu.showMenu();
     }
 }

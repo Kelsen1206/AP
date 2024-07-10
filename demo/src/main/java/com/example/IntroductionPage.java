@@ -132,10 +132,7 @@ public class IntroductionPage {
     }
 
     private void startGame() throws IOException {
-        imageLoader = new ImageLoader();
         game.setGameStatus(GameStatus.GAME_RUNNING);
-        TechCity techCity = new TechCity(game, stage, imageLoader);
-        techCity.createLevel();
-        techCity.show();
+        game.initializeTechCityAndSettings();
     }
 }

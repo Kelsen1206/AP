@@ -29,17 +29,21 @@ public class InputHandler {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
             showMenuCallBack.run();
         } else if (status == GameStatus.GAME_RUNNING) {
-            // Handle Quacky's movement
-            switch (keyCode) {
-                case LEFT:
-                    quacky.moveLeft();
-                    break;
-                case RIGHT:
-                    quacky.moveRight();
-                    break;
-                case UP:
-                    quacky.jump();
-                    break;
+            if (keyCode == KeyCode.ESCAPE) {
+                game.showSettingsMenu();
+            } else {
+                // Handle Quacky's movement
+                switch (keyCode) {
+                    case LEFT:
+                        quacky.moveLeft();
+                        break;
+                    case RIGHT:
+                        quacky.moveRight();
+                        break;
+                    case UP:
+                        quacky.jump();
+                        break;
+            }
                 // Add more cases for other controls as needed
             }
         } else if (status == GameStatus.GAME_OVER) {
