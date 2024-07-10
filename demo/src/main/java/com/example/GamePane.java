@@ -9,6 +9,7 @@ public class GamePane extends StackPane {
     private ImageView backgroundImageView;
     private double backgroundWidth;
     private VBox loginComponents;
+    private GameStatus gameStatus;
 
     public GamePane(Image backgroundImage) {
         backgroundImageView = new ImageView(backgroundImage);
@@ -27,5 +28,9 @@ public class GamePane extends StackPane {
         backgroundImageView.setFitWidth(1000);
         backgroundImageView.setFitHeight(650);
         backgroundImageView.setPreserveRatio(false);
+    }
+
+    public void setGameStatus(GameStatus gameStatus){
+        this.gameStatus = gameStatus;
     }
 }

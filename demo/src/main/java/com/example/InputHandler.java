@@ -10,13 +10,15 @@ public class InputHandler {
     private Stage stage;
     private Runnable showMenuCallBack;
     private Quacky quacky;
+    private Runnable restartGameCallBack;
 
-    public InputHandler(Game game, GamePane gamePane, Stage stage, Runnable showMenuCallBack, Quacky quacky) {
+    public InputHandler(Game game, GamePane gamePane, Stage stage, Runnable showMenuCallBack, Quacky quacky, Runnable restartGameCallBack) {
         this.game = game;
         this.gamePane = gamePane;
         this.stage = stage;
         this.showMenuCallBack = showMenuCallBack;
         this.quacky = quacky;
+        this.restartGameCallBack = restartGameCallBack;
     }
 
     public void keyPressed(KeyEvent event) {
@@ -39,6 +41,11 @@ public class InputHandler {
                     quacky.jump();
                     break;
                 // Add more cases for other controls as needed
+            }
+        } else if (status == GameStatus.GAME_OVER) {
+            if (keyCode == KeyCode.SPACE) {
+                restartGameCallBack.run();
+                gamePane.setGameStatus(GameStatus.GAME_RUNNING);
             }
         }
     }

@@ -23,6 +23,7 @@ public class Game extends Application {
     private final String fontPath = "/fonts/";
     private Quacky quacky;
     private GamePane gamePane;
+    private SoundManager soundManager;
 
     @Override
     public void start(Stage primaryStage){
@@ -30,7 +31,12 @@ public class Game extends Application {
         imageLoader = new ImageLoader();
         gameStatus = GameStatus.MAIN_SCREEN;
 
-        quacky = new Quacky(50,500, 50, 950);
+        quacky = new Quacky(50,500, 50, 950, soundManager);
+
+        soundManager = SoundManager.getInstance();
+        soundManager.loadSounds();
+
+        soundManager.playBackgroundMusic();
 
         showMainScreen();
     }
@@ -89,7 +95,8 @@ public class Game extends Application {
         fadeTransition.play();
 
         Runnable showMenuCallback = this::showGameMenu;
-        InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback, quacky);
+        Runnable restartGameCallback = this::restartGame;
+        InputHandler inputHandler = new InputHandler(this, gamePane, primaryStage, showMenuCallback, quacky, restartGameCallback);
 
         gameScene.setOnKeyPressed(inputHandler::keyPressed);
         gameScene.setOnKeyReleased(inputHandler::keyReleased);
@@ -97,7 +104,13 @@ public class Game extends Application {
     }
 
     private void showGameMenu() {
+        soundManager.stopBackgroundMusic();
+
         GameMenu gameMenu = new GameMenu(this, primaryStage);
         gameMenu.showMenu();
+    }
+
+    private void restartGame() {
+        gamePane.setGameStatus(GameStatus.GAME_RUNNING);
     }
 }

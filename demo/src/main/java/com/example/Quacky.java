@@ -1,3 +1,4 @@
+
 package com.example;
 
 import javafx.geometry.Rectangle2D;
@@ -11,14 +12,28 @@ public class Quacky {
     private boolean isJumping;
     private boolean isFacingRight;
     private int health;
-    private final double SPEED = 8.0;
-    private final double JUMP_VELOCITY = -15.0;
-    private final double GRAVITY = 1.0;
+    private final double SPEED = 5.0;
+    private final double JUMP_VELOCITY = -17.0;
+    private final double GRAVITY = 0.8;
     private long lastJumpTime = 0;
     private double leftBoundary;
     private double rightBoundary;
+    private Image[] walkFrames;
+    private int currentFrame;
+    private long lastFrameChange;
+    private static final long FRAME_DURATION = 100_000_000;
+    private SoundManager soundManager;
+    private long lastJumpSoundTime = 0;
+    private static final long JUMP_SOUND_COOLDOWN = 100_000_000;
+    private Image[] dieFrames;
+    private boolean isDying;
+    private int dieFrameIndex;
+    private long lastDieFrameChange;
+    private static final long DIE_FRAME_DURATION = 200_000_000;
+    private boolean isDead;
+    private double respawnX, respawnY;
 
-    public Quacky(double startX, double startY, double leftBoundary, double rightBoundary) {
+    public Quacky(double startX, double startY, double leftBoundary, double rightBoundary, SoundManager soundManager) {
         this.x = startX;
         this.y = startY;
         this.velocityX = 0;
@@ -28,10 +43,23 @@ public class Quacky {
         this.health = 100;
         this.leftBoundary = leftBoundary;
         this.rightBoundary = rightBoundary;
+        this.soundManager = soundManager;
+        this.respawnX = startX;
+        this.respawnY = startY;
+        this.isDead = false;
+        this.isDying = false;
 
-        // Load Quacky's image
-        Image quackyImage = new Image(getClass().getResourceAsStream("/images/Quacky.png"));
-        this.sprite = new ImageView(quackyImage);
+        walkFrames = new Image[6];
+        for (int i = 0; i < 6; i++) {
+            walkFrames[i] = new Image(getClass().getResourceAsStream("/images/Quacky Walk Animation_" + (i + 1) + ".png"));
+        }
+
+        dieFrames = new Image[4];
+        for (int i = 0; i < 4; i++) {
+            dieFrames[i] = new Image(getClass().getResourceAsStream("/images/Quacky Die Animation_" + (i + 1) + ".png"));
+        }
+
+        this.sprite = new ImageView(walkFrames[0]);
         this.sprite.setTranslateX(startX);
         this.sprite.setTranslateY(startY);
 
@@ -70,27 +98,39 @@ public class Quacky {
     }
 
     public void jump() {
-        if (!isJumping && (System.currentTimeMillis() - lastJumpTime > 150)) {
+        if (!isJumping && (System.nanoTime() - lastJumpTime > 150_000_000)) {
             velocityY = JUMP_VELOCITY;
             isJumping = true;
-            lastJumpTime = System.currentTimeMillis();
+            lastJumpTime = System.nanoTime();
+
+            if (System.nanoTime() - lastJumpSoundTime > JUMP_SOUND_COOLDOWN) {
+                soundManager.playSoundEffect("jump");
+                lastJumpSoundTime = System.nanoTime();
+            }
         }
     }
 
-    public void update() {
-        // Update horizontal position
-        x += velocityX;
-        x = Math.max(leftBoundary, Math.min(x, rightBoundary - sprite.getFitWidth()));
+    public void update(long now) {
+        if (isDying) {
+            updateDieAnimation(now);
+        } else if (!isDead) {
+            // Update horizontal position
+            x += velocityX;
+            x = Math.max(leftBoundary, Math.min(x, rightBoundary - sprite.getFitWidth()));
 
-        // Apply gravity
-        velocityY += GRAVITY;
-        y += velocityY;
+            // Apply gravity
+            velocityY += GRAVITY;
+            y += velocityY;
 
-        velocityY = Math.min(velocityY, 20);
+            velocityY = Math.min(velocityY, 20);
 
-        // Update sprite position
-        sprite.setTranslateX(x);
-        sprite.setTranslateY(y);
+            // Update sprite position
+            sprite.setTranslateX(x);
+            sprite.setTranslateY(y);
+
+            updateAnimation(now);
+            updateSpriteDirection();
+        }
     }
 
     public double getCenterX() {
@@ -104,7 +144,8 @@ public class Quacky {
 
     public void takeDamage(int damage) {
         health -= damage;
-        if (health < 0) health = 0;
+        if (health < 0)
+            health = 0;
     }
 
     public boolean isAlive() {
@@ -117,7 +158,7 @@ public class Quacky {
 
     // Getters and setters
     public ImageView getSprite() {
-        return sprite;
+        return this.sprite;
     }
 
     public double getX() {
@@ -152,5 +193,71 @@ public class Quacky {
 
     public void setRightBoundary(double rightBoundary) {
         this.rightBoundary = rightBoundary;
+    }
+
+    public void respawn() {
+        x = respawnX;
+        y = respawnY;
+        velocityX = 0;
+        velocityY = 0;
+        isJumping = false;
+        isDying = false;
+        isDead = false;
+        health = 100;  // Reset health
+        updatePosition();
+        sprite.setImage(walkFrames[0]);
+    }
+
+    private void updatePosition() {
+        sprite.setTranslateX(x);
+        sprite.setTranslateY(y);
+    }
+
+    public boolean hasFallenOffScreen(double screenHeight) {
+        return y > screenHeight;
+    }
+
+    public void die() {
+        if (!isDead) {
+            health = 0;
+            isDying = true;
+            isDead = true;
+            dieFrameIndex = 0;
+            lastDieFrameChange = System.nanoTime();
+            velocityX = 0;
+        }
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public boolean isDying() {
+        return isDying;
+    }
+
+    private void updateAnimation(long now) {
+        if (Math.abs(velocityX) > 0) {
+            if (now - lastFrameChange > FRAME_DURATION) {
+                currentFrame = (currentFrame + 1) % walkFrames.length;
+                sprite.setImage(walkFrames[currentFrame]);
+                lastFrameChange = now;
+            }
+        } else {
+            currentFrame = 0;
+            sprite.setImage(walkFrames[currentFrame]);
+        }
+    }
+
+    private void updateDieAnimation(long now) {
+        if (now - lastDieFrameChange > DIE_FRAME_DURATION) {
+            dieFrameIndex++;
+            if (dieFrameIndex < dieFrames.length) {
+                sprite.setImage(dieFrames[dieFrameIndex]);
+                lastDieFrameChange = now;
+            } else {
+                isDying = false;
+            }
+        }
     }
 }
