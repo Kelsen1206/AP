@@ -95,10 +95,6 @@ public class TechCity {
                 ImageView tileView;
                 try {
                     InputStream spriteStream = getClass().getResourceAsStream("/images/TechCityTileSet.png");
-                    if (spriteStream == null) {
-                        System.err.println("Sprite file not found.");
-                        continue;
-                    }
                     sprite = new Sprite(spriteStream, 32, 32);
                     if (tileCode != 0) {
                         tileView = new ImageView(sprite.getTile(0, 0));
@@ -304,5 +300,4 @@ public class TechCity {
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
     }
-
 }

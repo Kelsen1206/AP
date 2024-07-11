@@ -56,7 +56,6 @@ public class InputHandler {
 
     public void keyReleased(KeyEvent event) {
         KeyCode keyCode = event.getCode();
-        System.out.println("Key released: " + keyCode);
         GameStatus status = game.getGameStatus();
 
         if (status == GameStatus.GAME_RUNNING) {
