@@ -24,6 +24,7 @@ public class InputHandler {
     public void keyPressed(KeyEvent event) {
         KeyCode keyCode = event.getCode();
         GameStatus status = game.getGameStatus();
+        System.out.println("Key pressed: " + keyCode + ", Game status: " + status);
 
         if (status == GameStatus.MAIN_SCREEN) {
             game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);

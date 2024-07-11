@@ -72,12 +72,14 @@ public class Quacky {
     }
 
     public void moveLeft() {
+        System.out.println("Quacky moving left");
         velocityX = -SPEED;
         isFacingRight = false;
         updateSpriteDirection();
     }
 
     public void moveRight() {
+        System.out.println("Quacky moving right");
         velocityX = SPEED;
         isFacingRight = true;
         updateSpriteDirection();
@@ -111,6 +113,7 @@ public class Quacky {
     }
 
     public void update(long now) {
+        System.out.println("Updating Quacky: x=" + x + ", y=" + y + ", velocityX=" + velocityX + ", velocityY=" + velocityY);
         if (isDying) {
             updateDieAnimation(now);
         } else if (!isDead) {
