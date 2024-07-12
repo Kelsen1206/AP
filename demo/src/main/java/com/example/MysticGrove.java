@@ -28,9 +28,6 @@ public class MysticGrove {
     private Scene scene;
     private Sprite bigSprite;
     private Sprite grassSprite;
-    private Sprite smallTreeSprite;
-    private Sprite mediumTreeSprite;
-    private Sprite largeTreeSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
@@ -102,16 +99,18 @@ public class MysticGrove {
                 try {
                     InputStream bigSpriteStream = getClass().getResourceAsStream("/images/MysticGroveTileSet.png");
                     bigSprite = new Sprite(bigSpriteStream, 41, 39);
+                    InputStream grassSpriteStream = getClass().getResourceAsStream("/images/MysticGroveGrassTileSet.png");
+                    grassSprite = new Sprite(grassSpriteStream,38, 24);
 
                     switch (tileCode) {
                         case 1:
-                            tileView = new ImageView(bigSprite.getTile(10,0));
+                            tileView = new ImageView(grassSprite.getTile(0,0));
                             break;
                         case 2:
-                            tileView = new ImageView(bigSprite.getTile(11, 0));
+                            tileView = new ImageView(grassSprite.getTile(1, 0));
                             break;
                         case 3:
-                            tileView = new ImageView(bigSprite.getTile(12,0));
+                            tileView = new ImageView(grassSprite.getTile(2,0));
                             break;
                         case 5:
                             tileView = new ImageView(bigSprite.getTile(0,0));
