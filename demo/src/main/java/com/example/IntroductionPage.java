@@ -25,6 +25,7 @@ public class IntroductionPage {
     private ImageLoader imageLoader;
     private int currentIntroIndex = 0;
     private GameStatus gameStatus;
+    private LevelManager levelManager;
     private final String[] introImages = {
         "intro1.png",
         "intro2.png",
@@ -133,6 +134,6 @@ public class IntroductionPage {
 
     private void startGame() throws IOException {
         game.setGameStatus(GameStatus.GAME_RUNNING);
-        game.initializeTechCityAndSettings();
+        game.initializeGame();
     }
 }

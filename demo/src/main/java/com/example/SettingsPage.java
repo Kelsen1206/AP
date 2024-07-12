@@ -62,7 +62,7 @@ public class SettingsPage {
         muteCheckBox.setFont(font);
 
         // Layout for UI controls
-        VBox settingsLayout = new VBox(25);
+        VBox settingsLayout = new VBox(20);
         settingsLayout.setAlignment(Pos.CENTER); // Center aligns the children vertically within the VBox
         settingsLayout.setPadding(new Insets(20)); // 20 pixels padding around the VBox
         settingsLayout.setStyle("-fx-padding: 20px;");
@@ -83,7 +83,7 @@ public class SettingsPage {
 
 
         VBox backButtonBox = new VBox(backButton);
-        backButtonBox.setAlignment(Pos.BOTTOM_CENTER);
+        backButtonBox.setAlignment(Pos.CENTER);
         backButtonBox.setPadding(new Insets(70));
 
         BorderPane borderPane = new BorderPane();

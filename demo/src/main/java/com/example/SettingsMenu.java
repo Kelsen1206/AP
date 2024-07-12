@@ -12,11 +12,11 @@ import javafx.stage.Stage;
 public class SettingsMenu {
     private Game game;
     private Stage stage;
-    private TechCity techCity;
+    private LevelManager levelManager;
 
-    public SettingsMenu(Game game, TechCity techCity, Stage stage) {
+    public SettingsMenu(Game game, LevelManager levelManager, Stage stage) {
         this.game = game;
-        this.techCity = techCity;
+        this.levelManager = levelManager;
         this.stage = stage;
     }
 
@@ -64,13 +64,12 @@ public class SettingsMenu {
 
     private void resumeGame() {
         game.setGameStatus(GameStatus.GAME_RUNNING);
-        techCity.show();
+        levelManager.resumeCurrentLevel();
     }
 
     private void restartGame() {
         game.setGameStatus(GameStatus.GAME_RUNNING);
-        techCity.show();
-        techCity.restartGame();
+        levelManager.restartCurrentLevel();
     }
 
     private void showOptionsPage() {

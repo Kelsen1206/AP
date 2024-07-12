@@ -26,7 +26,7 @@ public class Game extends Application {
     private GamePane gamePane;
     private SoundManager soundManager;
     private SettingsMenu settingsMenu;
-    private TechCity techCity;
+    private LevelManager levelManager;
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
@@ -41,6 +41,9 @@ public class Game extends Application {
 
         soundManager.playBackgroundMusic();
 
+        levelManager = new LevelManager(this, primaryStage, imageLoader);
+        settingsMenu = new SettingsMenu(this, levelManager, primaryStage);
+
         showMainScreen();
     }
 
@@ -54,6 +57,13 @@ public class Game extends Application {
 
     public void setGameStatus(GameStatus gameStatus){
         this.gameStatus = gameStatus;
+        if (gameStatus == GameStatus.LEVEL_COMPLETED) {
+            try {
+                levelManager.startNextLevel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     void showMainScreen(){
@@ -117,14 +127,13 @@ public class Game extends Application {
         gamePane.setGameStatus(GameStatus.GAME_RUNNING);
     }
 
-    public void initializeTechCityAndSettings() throws IOException {
-        techCity = new TechCity(this, primaryStage, imageLoader);
-        settingsMenu = new SettingsMenu(this, techCity, primaryStage);
-        techCity.createLevel();
-        techCity.show();
-    }
 
     public void showSettingsMenu() {
         settingsMenu.showMenu();
+    }
+
+    public void initializeGame() throws IOException {
+        levelManager.startNextLevel();
+        settingsMenu = new SettingsMenu(this, levelManager, primaryStage);
     }
 }
