@@ -1,11 +1,8 @@
 package com.example;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -31,7 +28,7 @@ import javafx.stage.Stage;
 public class SignUpPage {
     private final String imagePath = "/images/";
     private final String fontPath = "/fonts/";
-    private final String userDataFilePath = "C:/Users/kelse/OneDrive/Desktop/Advance Programming asgn/demo/src/main/resources/user_data.bin";
+    private final String userDataFilePath = "/user_data.bin";
     private GamePane gamePane;
     private Game game;
     private Stage stage;
@@ -229,23 +226,41 @@ public class SignUpPage {
     }
 
     private void saveUserData() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userDataFilePath))) {
-            oos.writeObject(userData);
-        } catch (IOException e) {
+        try {
+            String resourcePath = "/user_data.bin";
+            URL resourceUrl = getClass().getResource(resourcePath);
+            if (resourceUrl == null) {
+                System.err.println("Resource not found: " + resourcePath);
+                return;
+            }
+
+            String filePath = resourceUrl.toURI().getPath();
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+                oos.writeObject(userData);
+                System.out.println("User data saved successfully. File path: " + filePath);
+                System.out.println("Current user data: " + userData);
+            }
+        } catch (IOException | URISyntaxException e) {
+            System.err.println("Error saving user data: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private Map<String, String> loadUserData() {
-        File file = new File(userDataFilePath);
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                return (Map<String, String>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+        Map<String, String> data = new HashMap<>();
+        try (InputStream is = getClass().getResourceAsStream(userDataFilePath);
+             ObjectInputStream ois = is != null ? new ObjectInputStream(is) : null) {
+            if (ois != null) {
+                data = (Map<String, String>) ois.readObject();
+                System.out.println("User data loaded successfully.");
+                System.out.println("Loaded user data: " + data);
+            } else {
+                System.out.println("Could not find the user data file: " + userDataFilePath);
             }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        return new HashMap<>();
+        return data;
     }
 }
 
