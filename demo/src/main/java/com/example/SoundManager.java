@@ -2,20 +2,24 @@ package com.example;
 
 import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SoundManager {
     private static SoundManager instance;
     private Map<String, Clip> soundEffects;
-    private Clip backgroundMusic;
+    private Map<String, Clip> backgroundMusics;
+    private Clip currentBackgroundMusic;
+    private float volume;
+    private boolean isMuted;
 
     private SoundManager() {
         soundEffects = new HashMap<>();
+        backgroundMusics = new HashMap<>();
+        volume = 1.0f;
+        isMuted = false;
     }
 
     public static SoundManager getInstance() {
@@ -30,7 +34,13 @@ public class SoundManager {
         loadSoundEffect("jump", "/audio/jump.wav");
 
         // Load background music
-        loadBackgroundMusic("/audio/Starting.wav");
+        loadBackgroundMusic("main", "/audio/Starting.wav");
+        loadBackgroundMusic("Aqua", "/audio/Aqua.wav");
+        loadBackgroundMusic("Crystal", "/audio/Crystal.wav");
+        loadBackgroundMusic("Mystic", "/audio/Mystic.wav");
+        loadBackgroundMusic("Snowy", "/audio/Snowy.wav");
+        loadBackgroundMusic("Taylors", "/audio/Taylors.wav");
+        loadBackgroundMusic("TechCity", "/audio/TechCity.wav");
     }
 
     private void loadSoundEffect(String name, String path) {
@@ -47,7 +57,7 @@ public class SoundManager {
         }
     }
 
-    private void loadBackgroundMusic(String path) {
+    private void loadBackgroundMusic(String name, String path) {
         try {
             InputStream is = getClass().getResourceAsStream(path);
             if (is == null) {
@@ -56,10 +66,9 @@ public class SoundManager {
             }
 
             AudioInputStream ais = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-            backgroundMusic = AudioSystem.getClip();
-            backgroundMusic.open(ais);
-
-            // Don't close the AudioInputStream here, as the Clip is still using it
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            backgroundMusics.put(name, clip);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.err.println("Could not load background music: " + path);
             e.printStackTrace();
@@ -68,29 +77,54 @@ public class SoundManager {
 
     public void playSoundEffect(String name) {
         Clip clip = soundEffects.get(name);
-        if (clip != null) {
+        if (clip != null && !isMuted) {
             clip.stop();
             clip.setFramePosition(0);
+            setClipVolume(clip, volume);
             clip.start();
         }
     }
 
-    public void playBackgroundMusic() {
-        if (backgroundMusic != null) {
-            backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+    public void playBackgroundMusic(String name) {
+        stopBackgroundMusic(); // Stop current background music if any
+        Clip clip = backgroundMusics.get(name);
+        if (clip != null) {
+            currentBackgroundMusic = clip;
+            setClipVolume(clip, volume);
+            if (!isMuted) {
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
         }
     }
 
     public void stopBackgroundMusic() {
-        if (backgroundMusic != null) {
-            backgroundMusic.stop();
+        if (currentBackgroundMusic != null) {
+            currentBackgroundMusic.stop();
+            currentBackgroundMusic.setFramePosition(0);
         }
     }
 
-    public void setBackgroundMusicVolume(float volume) {
-        if (backgroundMusic != null) {
-            FloatControl gainControl =
-                    (FloatControl) backgroundMusic.getControl(FloatControl.Type.MASTER_GAIN);
+    public void setVolume(float volume) {
+        this.volume = volume;
+        if (currentBackgroundMusic != null) {
+            setClipVolume(currentBackgroundMusic, volume);
+        }
+    }
+
+    public void setMute(boolean mute) {
+        this.isMuted = mute;
+        if (currentBackgroundMusic != null) {
+            if (mute) {
+                currentBackgroundMusic.stop();
+            } else {
+                currentBackgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+        }
+    }
+
+    private void setClipVolume(Clip clip, float volume) {
+        if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             float dB = (float) (Math.log(volume) / Math.log(10.0) * 20.0);
             gainControl.setValue(dB);
         }

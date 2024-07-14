@@ -70,6 +70,8 @@ public class AquaFjords extends Level{
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
 
+        soundManager.playBackgroundMusic("Aqua");
+
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
         gameOverText.setFont(Font.loadFont(getClass().getResourceAsStream( "/fonts/ARCADE_N.ttf"), 45));

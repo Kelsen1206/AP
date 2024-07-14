@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class Taylors extends Level {
@@ -71,6 +72,8 @@ public class Taylors extends Level {
         this.camera = new Camera();
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
+
+        soundManager.playBackgroundMusic("Taylors");
 
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
@@ -331,7 +334,11 @@ public class Taylors extends Level {
                 if (now - lastUpdate >= FRAME_TIME) {
                     if (game.getGameStatus() == GameStatus.GAME_RUNNING && !levelCompleted) {
                         quacky.update(now);
-                        checkCollisions();
+                        try {
+                            checkCollisions();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         updateCamera();
                         updateBackground();
 
@@ -395,7 +402,7 @@ public class Taylors extends Level {
         game.setGameStatus(GameStatus.GAME_RUNNING);
     }
 
-    private void checkCollisions() {
+    private void checkCollisions() throws IOException {
         int tileSize = 50; // Adjust this to match your tile size
         int quackyTileX = (int) (quacky.getX() / tileSize);
         int quackyTileY = (int) (quacky.getY() / tileSize);
@@ -454,11 +461,13 @@ public class Taylors extends Level {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
     }
 
-    private void levelComplete() {
+    private void levelComplete() throws IOException {
         if(!levelCompleted) {
             levelCompleted = true;
-            game.setGameStatus(GameStatus.LEVEL_TRANSITIONING);
-            // Any other level completion logic
+            game.setGameStatus(GameStatus.GAME_COMPLETED);
+            soundManager.stopBackgroundMusic();
+            WinPage winPage = new WinPage(game, stage);
+            winPage.show();
         }
     }
 }

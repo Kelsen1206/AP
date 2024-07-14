@@ -39,7 +39,7 @@ public class Game extends Application {
         soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
 
-        soundManager.playBackgroundMusic();
+        soundManager.playBackgroundMusic("main");
 
         levelManager = new LevelManager(this, imageLoader);
         settingsMenu = new SettingsMenu(this, levelManager, primaryStage);

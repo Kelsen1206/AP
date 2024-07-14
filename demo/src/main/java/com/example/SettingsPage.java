@@ -1,7 +1,5 @@
 package com.example;
 
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,11 +24,13 @@ public class SettingsPage {
     private static final int DEFAULT_VOLUME = 50;
     private Slider volumeSlider;
     private CheckBox muteCheckBox;
+    private SoundManager soundManager;
 
     public SettingsPage(GamePane gamePane, Game game, Stage stage) {
         this.gamePane = gamePane;
         this.game = game;
         this.stage = stage;
+        this.soundManager = SoundManager.getInstance();
     }
 
     public void show() {
@@ -96,26 +96,15 @@ public class SettingsPage {
         stage.setScene(settingsScene);
         stage.show();
 
-        // Adjust volume label based on slider value
-        volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                volumeLabel.setText("Volume: " + newValue.intValue());
-            }
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            float volume = newValue.floatValue() / 100f; // Convert to range 0.0 - 1.0
+            soundManager.setVolume(volume);
+            volumeLabel.setText("Volume: " + newValue.intValue());
         });
 
-         // Mute checkbox listener
-         muteCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    // Handle mute action
-                    volumeSlider.setDisable(true); // Disable volume slider when muted
-                } else {
-                    // Handle unmute action
-                    volumeSlider.setDisable(false); // Enable volume slider
-                }
-            }
+        muteCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            soundManager.setMute(newValue);
+            volumeSlider.setDisable(newValue);
         });
     }
 }

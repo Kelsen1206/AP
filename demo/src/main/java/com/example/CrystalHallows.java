@@ -70,6 +70,7 @@ public class CrystalHallows extends Level{
         this.camera = new Camera();
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
+        soundManager.playBackgroundMusic("Crystal");
 
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");

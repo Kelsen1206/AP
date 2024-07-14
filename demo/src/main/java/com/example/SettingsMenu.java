@@ -73,7 +73,9 @@ public class SettingsMenu {
     }
 
     private void showOptionsPage() {
-        // Implement options page logic here
+        GamePane gamePane = new GamePane(new Image(getClass().getResource("/images/options page.png").toString()));
+        OptionsPage optionsPage = new OptionsPage(gamePane, game, stage, levelManager);
+        optionsPage.show();
     }
 
     private void quitToMainMenu() {
