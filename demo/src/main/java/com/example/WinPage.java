@@ -4,7 +4,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -90,36 +89,26 @@ public class WinPage {
             }
             timeline.play();
 
-            // Create an ImageView for the "Next" button
-            Button nextButton = new Button();
-            Image nextButtonImage = new Image(getClass().getResourceAsStream(imagePath + "next button.png")); // Ensure this image exists
-            ImageView nextButtonImageView = new ImageView(nextButtonImage);
-            nextButtonImageView.setFitWidth(175);
-            nextButtonImageView.setPreserveRatio(true);
-            nextButton.setGraphic(nextButtonImageView);
-            nextButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+            winPane.getChildren().add(dialogText);
 
-            nextButton.setOnMouseEntered(event -> nextButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand;"));
-            nextButton.setOnMouseExited(event -> nextButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;"));
+            Scene winScene = new Scene(winPane, 1000, 650);
 
-            nextButton.setOnMouseClicked(e -> {
-                currentWinIndex++;
-                try {
-                    showNextIntro();
-                } catch (FileNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+            // Adding key press functionality
+            winScene.setOnKeyPressed(event -> {
+                switch (event.getCode()) {
+                    case ENTER:
+                        currentWinIndex++;
+                        try {
+                            showNextIntro();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             });
 
-            // Positioning the next button (adjust the coordinates as needed)
-            StackPane.setAlignment(nextButton, Pos.BOTTOM_CENTER);
-            nextButton.setTranslateY(-20); // Adjust Y coordinate to move it above
-
-            winPane.getChildren().addAll(dialogText, nextButton);
-
-            Scene winScene = new Scene(winPane, 1000, 650);
             stage.setScene(winScene);
             stage.show();
         } else {
