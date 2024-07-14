@@ -17,9 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class TechCity {
+public class TechCity extends Level{
     private double spriteSize = 50;
-    private ImageLoader imageLoader;
     protected Game game;
     protected Stage stage;
     private ImageView backgroundImage;
@@ -34,13 +33,14 @@ public class TechCity {
     private Quacky quacky;
     private final double viewWidth = 400;
     private Camera camera;
-    private static final long FRAME_TIME = 8_333_333; // 60 FPS in nanoseconds
+    private static final long FRAME_TIME = 8_333_333;
     private int initialX = 100;
     private int initialY = 200;
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;
-    private SettingsMenu settingsMenu;
+    private InputHandler inputHandler;
+    private boolean levelCompleted;
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -59,10 +59,10 @@ public class TechCity {
 
 
     public TechCity(Game game, Stage stage, ImageLoader imageLoader) throws FileNotFoundException {
+        super(game, stage, imageLoader);
+
         this.game = game;
         this.stage = stage;
-        this.imageLoader = imageLoader;
-
         this.backgroundImage = new ImageView(imageLoader.loadImage("/images/TechCity.png"));
         this.gameWorld = new Pane();
         this.gamePane = new GamePane(backgroundImage.getImage());
@@ -90,6 +90,7 @@ public class TechCity {
         camera.setX(newCameraX);
     }
 
+    @Override
     public void createLevel() {
         // Create tile map
         gridPane = new GridPane();
@@ -384,7 +385,7 @@ public class TechCity {
         scene = new Scene(gameWorld, sceneWidth, 650);
 
         // Add input handler
-        InputHandler inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
+        inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
         scene.setOnKeyPressed(event -> inputHandler.keyPressed(event));
         scene.setOnKeyReleased(event -> inputHandler.keyReleased(event));
 
@@ -395,10 +396,13 @@ public class TechCity {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= FRAME_TIME) {
-                    if (game.getGameStatus() == GameStatus.GAME_RUNNING) {
+                    if (game.getGameStatus() == GameStatus.GAME_RUNNING && !levelCompleted) {
                         quacky.update(now);
-                        checkCollisions();
-                        debugRender();
+                        try {
+                            checkCollisions();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         updateCamera();
                         updateBackground();
 
@@ -411,6 +415,8 @@ public class TechCity {
                             game.setGameStatus(GameStatus.GAME_OVER);
                             showGameOver();
                         }
+                    } else if (levelCompleted) {
+                        this.stop();
                     }
 
                     lastUpdate = now;
@@ -436,7 +442,9 @@ public class TechCity {
         gridPane.setTranslateX(cameraX);
     }
 
+    @Override
     public void show() {
+        resetLevelState();
         stage.setScene(scene);
         stage.show();
     }
@@ -448,6 +456,7 @@ public class TechCity {
         gameOverText.toFront();
     }
 
+    @Override
     public void restartGame() {
         quacky.respawn();
         gameOver = false;
@@ -457,7 +466,7 @@ public class TechCity {
         game.setGameStatus(GameStatus.GAME_RUNNING);
     }
 
-    private void checkCollisions() {
+    private void checkCollisions() throws IOException {
         int tileSize = 50; // Adjust this to match your tile size
         int quackyTileX = (int) (quacky.getX() / tileSize);
         int quackyTileY = (int) (quacky.getY() / tileSize);
@@ -474,8 +483,10 @@ public class TechCity {
                     );
 
                     if (quacky.getBoundingBox().intersects(tileBounds)) {
-                        if (tileCode == 100) {
+                        if (tileCode == 100 && !levelCompleted) {
                             // Handle collision with pipe
+                            levelComplete();
+                            return;
                         } else {
                             handleCollision(quacky, tileBounds);
                         }
@@ -511,44 +522,15 @@ public class TechCity {
         }
     }
 
-    private void debugRender() {
-        // Clear previous debug visuals
-        gameWorld.getChildren().removeIf(node -> node instanceof Rectangle);
-
-        // Render Quacky's collision box
-        Rectangle quackyBox = new Rectangle(
-                quacky.getX(),
-                quacky.getY(),
-                quacky.getSprite().getFitWidth(),
-                quacky.getSprite().getFitHeight()
-        );
-        quackyBox.setFill(Color.TRANSPARENT);
-        quackyBox.setStroke(Color.RED);
-        gameWorld.getChildren().add(quackyBox);
-
-        // Render visible tile collision boxes
-        int tileSize = 50;
-        int startX = (int) (camera.getX() / tileSize);
-        double endX = startX + (viewWidth / tileSize) + 1;
-
-        for (int y = 0; y < mapData.length; y++) {
-            for (int x = startX; x < endX && x < mapData[0].length; x++) {
-                if (mapData[y][x] != 0) {
-                    Rectangle tileBox = new Rectangle(
-                            x * tileSize - camera.getX(),
-                            y * tileSize,
-                            tileSize,
-                            tileSize
-                    );
-                    tileBox.setFill(Color.TRANSPARENT);
-                    tileBox.setStroke(Color.BLUE);
-                    gameWorld.getChildren().add(tileBox);
-                }
-            }
-        }
-    }
-
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
+    }
+
+    private void levelComplete() {
+        if(!levelCompleted) {
+            levelCompleted = true;
+            game.setGameStatus(GameStatus.LEVEL_TRANSITIONING);
+            // Any other level completion logic
+        }
     }
 }

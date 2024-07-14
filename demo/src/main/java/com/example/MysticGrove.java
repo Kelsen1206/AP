@@ -17,9 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MysticGrove {
+public class MysticGrove extends Level{
     private double spriteSize = 50;
-    private ImageLoader imageLoader;
     protected Game game;
     protected Stage stage;
     private ImageView backgroundImage;
@@ -32,20 +31,21 @@ public class MysticGrove {
     private Quacky quacky;
     private final double viewWidth = 400;
     private Camera camera;
-    private static final long FRAME_TIME = 8_333_333; // 60 FPS in nanoseconds
+    private static final long FRAME_TIME = 8_333_333;
     private int initialX = 100;
     private int initialY = 200;
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;
-    private SettingsMenu settingsMenu;
+    private InputHandler inputHandler;
+    private boolean levelCompleted = false;
     int[][] mapData =
             {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,34,35,37,0,0,0,0,1,0,0,5,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,8,0,0,0,0,0,5,6,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,6,6,8,0,0,0,0,0,0,0,0,0,5,8,0,34,37,0,5,6,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,37,0,0,0,0,0,0,34,35,35,35,37,0,0,0,0,0,24,0,0,0,0,5,6,7,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,37,0,0,0,0,34,35,35,35,37,0,0,5,6,6,6,6,6,8,0,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,5,6,8,0,0,0,0,0,0,0,0,0,5,8,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,5,6,8,0,0,0,0,0,0,0,31,0,0,0,0,0,2,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,37,0,0,0,0,34,35,35,35,37,0,0,5,6,6,6,6,6,8,0,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,5,6,8,0,0,0,0,0,0,0,0,0,5,8,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,5,6,8,0,0,0,0,0,0,0,31,0,0,0,0,0,4,0,0},
                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,6,8,0,0,0,0,0,0,0,0,1,1,0,5,6,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,35,35,35,35,17,30,6,6,6,10,0,0,0,0,0,0,0,5,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,24,0,0,0,5,6,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,34,37,0,0,26,0,0,0,0,0,0,0,5,6,6,8,0,0,0,0,31,0,34,35,37,0,0,24,0,0,31,0,0,32,41,44,5,6,6,6,8},
                     {0,0,0,0,0,0,0,71,0,0,0,0,0,0,0,0,34,37,0,0,0,0,0,0,0,0,0,5,8,0,0,34,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,35,35,35,35,37,0,0,0,0,0,0,0,27,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,14,6,6,6,8,0,0,0,0,0,0,5,6,10,0,0,0,0,0,24,0,73,33,0,5,8,0,0,0,0,5,8,0,0,0,0,0,0,0,34,35,35,37,0,0,0,0,0,0,0,0,0,0,0,5,8,0,0,0,0,48,49,50,34,35,35,17,30},
                     {0,0,0,0,0,0,78,79,0,0,2,0,5,8,0,0,0,0,0,0,0,0,0,2,5,58,0,34,37,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,8,0,27,30,0,0,0,0,2,5,7,7,8,0,0,0,0,0,3,0,73,41,42,43,44,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,8,78,79,0,34,37,0,0,0,0,27,30,1,1,0,0,0,0,0,0,0,0,0,0,0,25,2,0,0,0,0,33,0,0,34,37,0,0,0,60,61,62,63,0,0,0,27,30},
@@ -58,10 +58,10 @@ public class MysticGrove {
 
 
     public MysticGrove(Game game, Stage stage, ImageLoader imageLoader) throws FileNotFoundException {
+        super(game, stage, imageLoader);
+
         this.game = game;
         this.stage = stage;
-        this.imageLoader = imageLoader;
-
         this.backgroundImage = new ImageView(imageLoader.loadImage("/images/Mystic Grove.jpg"));
         this.gameWorld = new Pane();
         this.gamePane = new GamePane(backgroundImage.getImage());
@@ -73,7 +73,7 @@ public class MysticGrove {
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
         gameOverText.setFont(Font.loadFont(getClass().getResourceAsStream( "/fonts/ARCADE_N.ttf"), 45));
-        gameOverText.setFill(Color.WHITE);
+        gameOverText.setFill(Color.BLACK);
         gameOverText.setTextAlignment(TextAlignment.CENTER);
         gameOverText.setVisible(false);
     }
@@ -89,6 +89,7 @@ public class MysticGrove {
         camera.setX(newCameraX);
     }
 
+    @Override
     public void createLevel() {
         // Create tile map
         gridPane = new GridPane();
@@ -100,7 +101,7 @@ public class MysticGrove {
                     InputStream bigSpriteStream = getClass().getResourceAsStream("/images/MysticGroveTileSet.png");
                     bigSprite = new Sprite(bigSpriteStream, 41, 39);
                     InputStream grassSpriteStream = getClass().getResourceAsStream("/images/MysticGroveGrassTileSet.png");
-                    grassSprite = new Sprite(grassSpriteStream,38, 24);
+                    grassSprite = new Sprite(grassSpriteStream,38, 26);
 
                     switch (tileCode) {
                         case 1:
@@ -243,6 +244,9 @@ public class MysticGrove {
                         case 87:
                             tileView = new ImageView(bigSprite.getTile(13,8));
                             break;
+                        case 4:
+                            tileView = new ImageView(grassSprite.getTile(3,0));
+                            break;
                         case 0:
                         default:
                             tileView = new ImageView();
@@ -284,7 +288,7 @@ public class MysticGrove {
         scene = new Scene(gameWorld, sceneWidth, 650);
 
         // Add input handler
-        InputHandler inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
+        inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
         scene.setOnKeyPressed(event -> inputHandler.keyPressed(event));
         scene.setOnKeyReleased(event -> inputHandler.keyReleased(event));
 
@@ -295,9 +299,13 @@ public class MysticGrove {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= FRAME_TIME) {
-                    if (game.getGameStatus() == GameStatus.GAME_RUNNING) {
+                    if (game.getGameStatus() == GameStatus.GAME_RUNNING && !levelCompleted) {
                         quacky.update(now);
-                        checkCollisions();
+                        try {
+                            checkCollisions();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         updateCamera();
                         updateBackground();
 
@@ -310,6 +318,8 @@ public class MysticGrove {
                             game.setGameStatus(GameStatus.GAME_OVER);
                             showGameOver();
                         }
+                    } else if (levelCompleted) {
+                        this.stop();
                     }
 
                     lastUpdate = now;
@@ -335,7 +345,9 @@ public class MysticGrove {
         gridPane.setTranslateX(cameraX);
     }
 
+    @Override
     public void show() {
+        resetLevelState();
         stage.setScene(scene);
         stage.show();
     }
@@ -347,6 +359,7 @@ public class MysticGrove {
         gameOverText.toFront();
     }
 
+    @Override
     public void restartGame() {
         quacky.respawn();
         gameOver = false;
@@ -356,7 +369,7 @@ public class MysticGrove {
         game.setGameStatus(GameStatus.GAME_RUNNING);
     }
 
-    private void checkCollisions() {
+    private void checkCollisions() throws IOException {
         int tileSize = 50; // Adjust this to match your tile size
         int quackyTileX = (int) (quacky.getX() / tileSize);
         int quackyTileY = (int) (quacky.getY() / tileSize);
@@ -373,8 +386,9 @@ public class MysticGrove {
                     );
 
                     if (quacky.getBoundingBox().intersects(tileBounds)) {
-                        if (tileCode == 100) {
-                            // Handle collision with pipe
+                        if (tileCode == 4 && !levelCompleted) {
+                            levelComplete();
+                            return;
                         } else {
                             handleCollision(quacky, tileBounds);
                         }
@@ -412,5 +426,13 @@ public class MysticGrove {
 
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
+    }
+
+    private void levelComplete() {
+        if(!levelCompleted) {
+            levelCompleted = true;
+            game.setGameStatus(GameStatus.LEVEL_TRANSITIONING);
+            // Any other level completion logic
+        }
     }
 }

@@ -14,12 +14,10 @@ import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
-public class Taylors {
+public class Taylors extends Level {
     private double spriteSize = 50;
-    private ImageLoader imageLoader;
     protected Game game;
     protected Stage stage;
     private ImageView backgroundImage;
@@ -36,18 +34,19 @@ public class Taylors {
     private Quacky quacky;
     private final double viewWidth = 400;
     private Camera camera;
-    private static final long FRAME_TIME = 8_333_333; // 60 FPS in nanoseconds
+    private static final long FRAME_TIME = 8_333_333;
     private int initialX = 100;
     private int initialY = 200;
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;
-    private SettingsMenu settingsMenu;
+    private InputHandler inputHandler;
+    private boolean levelCompleted;
     int[][] mapData =
-            {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 28, 28, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296, 297, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 36, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 36, 88, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 33, 42, 0, 0, 0, 0, 0, 0, 35, 0, 35, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 298, 299, 0, 0, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 84, 36, 36, 36, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 36, 0, 84, 36, 0, 0, 36, 0, 36, 36, 0, 0, 36, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 15, 16, 17, 0, 0, 0, 33, 34, 0, 0, 0, 0, 0, 43, 34, 0, 0, 0, 35, 45, 35, 45, 35, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 301, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 23, 24, 25, 26, 0, 0, 0, 0, 84, 36, 36, 95, 36, 36, 121, 0, 0, 0, 0, 0, 0, 0, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 36, 36, 36, 89, 0, 36, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 1, 34, 0, 33, 2, 3, 34, 0, 33, 2, 34, 0, 33, 2, 2, 34, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 34, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 45, 0, 45, 0, 45, 0},
@@ -61,10 +60,10 @@ public class Taylors {
 
 
     public Taylors(Game game, Stage stage, ImageLoader imageLoader) throws FileNotFoundException {
+        super(game, stage, imageLoader);
+
         this.game = game;
         this.stage = stage;
-        this.imageLoader = imageLoader;
-
         this.backgroundImage = new ImageView(imageLoader.loadImage("/images/Taylors.png"));
         this.gameWorld = new Pane();
         this.gamePane = new GamePane(backgroundImage.getImage());
@@ -274,6 +273,9 @@ public class Taylors {
                         case 303:
                             tileView = new ImageView(redTreeSprite.getTile(1,3));
                             break;
+                        case 28:
+                            tileView = new ImageView(bigSprite.getTile(1,7));
+                            break;
                         case 0:
                         default:
                             tileView = new ImageView();
@@ -316,7 +318,7 @@ public class Taylors {
         scene = new Scene(gameWorld, sceneWidth, 650);
 
         // Add input handler
-        InputHandler inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
+        inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
         scene.setOnKeyPressed(event -> inputHandler.keyPressed(event));
         scene.setOnKeyReleased(event -> inputHandler.keyReleased(event));
 
@@ -327,10 +329,9 @@ public class Taylors {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= FRAME_TIME) {
-                    if (game.getGameStatus() == GameStatus.GAME_RUNNING) {
+                    if (game.getGameStatus() == GameStatus.GAME_RUNNING && !levelCompleted) {
                         quacky.update(now);
                         checkCollisions();
-                        debugRender();
                         updateCamera();
                         updateBackground();
 
@@ -343,6 +344,8 @@ public class Taylors {
                             game.setGameStatus(GameStatus.GAME_OVER);
                             showGameOver();
                         }
+                    } else if (levelCompleted) {
+                        this.stop();
                     }
 
                     lastUpdate = now;
@@ -368,7 +371,9 @@ public class Taylors {
         gridPane.setTranslateX(cameraX);
     }
 
+    @Override
     public void show() {
+        resetLevelState();
         stage.setScene(scene);
         stage.show();
     }
@@ -380,6 +385,7 @@ public class Taylors {
         gameOverText.toFront();
     }
 
+    @Override
     public void restartGame() {
         quacky.respawn();
         gameOver = false;
@@ -406,8 +412,9 @@ public class Taylors {
                     );
 
                     if (quacky.getBoundingBox().intersects(tileBounds)) {
-                        if (tileCode == 100) {
-                            // Handle collision with pipe
+                        if (tileCode == 28 && !levelCompleted) {
+                            levelComplete();
+                            return;
                         } else {
                             handleCollision(quacky, tileBounds);
                         }
@@ -443,44 +450,15 @@ public class Taylors {
         }
     }
 
-    private void debugRender() {
-        // Clear previous debug visuals
-        gameWorld.getChildren().removeIf(node -> node instanceof Rectangle);
-
-        // Render Quacky's collision box
-        Rectangle quackyBox = new Rectangle(
-                quacky.getX(),
-                quacky.getY(),
-                quacky.getSprite().getFitWidth(),
-                quacky.getSprite().getFitHeight()
-        );
-        quackyBox.setFill(Color.TRANSPARENT);
-        quackyBox.setStroke(Color.RED);
-        gameWorld.getChildren().add(quackyBox);
-
-        // Render visible tile collision boxes
-        int tileSize = 50;
-        int startX = (int) (camera.getX() / tileSize);
-        double endX = startX + (viewWidth / tileSize) + 1;
-
-        for (int y = 0; y < mapData.length; y++) {
-            for (int x = startX; x < endX && x < mapData[0].length; x++) {
-                if (mapData[y][x] != 0) {
-                    Rectangle tileBox = new Rectangle(
-                            x * tileSize - camera.getX(),
-                            y * tileSize,
-                            tileSize,
-                            tileSize
-                    );
-                    tileBox.setFill(Color.TRANSPARENT);
-                    tileBox.setStroke(Color.BLUE);
-                    gameWorld.getChildren().add(tileBox);
-                }
-            }
-        }
-    }
-
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
+    }
+
+    private void levelComplete() {
+        if(!levelCompleted) {
+            levelCompleted = true;
+            game.setGameStatus(GameStatus.LEVEL_TRANSITIONING);
+            // Any other level completion logic
+        }
     }
 }

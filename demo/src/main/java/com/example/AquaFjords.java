@@ -17,53 +17,52 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AquaFjords {
+public class AquaFjords extends Level{
     private double spriteSize = 50;
-    private ImageLoader imageLoader;
     protected Game game;
     protected Stage stage;
     private ImageView backgroundImage;
     private GamePane gamePane;
     private GridPane gridPane;
     private Scene scene;
-    private Sprite bigSprite;
-    private Sprite towerSprite1;
-    private Sprite towerSprite2;
-    private Sprite pipeSprite;
+    private Sprite tileSprite;
+    private Sprite treeSprite;
+    private Sprite flagSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
     private Camera camera;
-    private static final long FRAME_TIME = 8_333_333; // 60 FPS in nanoseconds
+    private static final long FRAME_TIME = 8_333_333;
     private int initialX = 100;
     private int initialY = 200;
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;
-    private SettingsMenu settingsMenu;
+    private InputHandler inputHandler;
+    private boolean levelCompleted;
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 19, 19, 20, 0, 0, 0, 0, 0, 762, 763, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 25, 0, 25, 0, 25, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 28, 36, 37, 0, 0, 0, 0, 0, 765, 766, 766, 767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 70, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 22, 0, 22, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 20, 0, 0, 0, 0, 0, 0, 0, 768, 769, 769, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 69, 70, 71, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 73, 0, 0, 73, 0, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 70, 70, 71, 0, 0, 0, 0, 0, 0, 0, 22, 0, 22, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 20, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 26, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 20, 0, 0, 0, 0, 0, 0, 18, 19, 19, 2, 2, 3, 0, 0, 0, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 71, 0, 69, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 762, 763, 764, 0, 0, 26, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 20, 0, 0, 0, 0, 1, 2, 2, 2, 19, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 22, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 1, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 765, 766, 767, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {19, 20, 0, 0, 0, 0, 18, 19, 19, 19, 19, 19, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 1, 2, 2, 3, 35, 36, 36, 37, 763, 764, 0, 0, 0, 1, 2, 18, 20, 0, 18, 20, 2, 3, 0, 0, 0, 0, 22, 0, 0, 0, 0, 22, 762, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 768, 769, 770, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 762, 763, 764, 0, 0, 0, 150, 151, 152, 153, 180},
-                    {19, 20, 0, 0, 0, 1, 2, 2, 2, 2, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 73, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 69, 70, 71, 0, 0, 22, 1, 2, 2, 3, 35, 36, 36, 37, 0, 0, 0, 765, 766, 767, 0, 1, 2, 18, 19, 19, 20, 0, 18, 19, 19, 20, 2, 3, 0, 0, 22, 5, 0, 0, 5, 22, 765, 766, 767, 69, 70, 71, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 0, 22, 765, 766, 767, 0, 0, 0, 150, 177, 178, 179, 206},
-                    {19, 20, 0, 0, 0, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 39, 0, 0, 0, 73, 0, 73, 0, 0, 0, 39, 0, 39, 0, 39, 0, 0, 0, 0, 0, 0, 39, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 769, 770, 0, 35, 36, 36, 36, 36, 37, 0, 35, 36, 36, 36, 36, 37, 0, 0, 39, 39, 73, 73, 39, 39, 768, 769, 770, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 39, 0, 39, 0, 39, 0, 39, 0, 39, 768, 769, 770, 0, 0, 0, 150, 203, 204, 205, 180},
+                    {19, 19, 19, 20, 0, 0, 0, 0, 0, 762, 763, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 22, 0,22, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 28, 36, 37, 0, 0, 0, 0, 0, 765, 766, 766, 767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 70, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 22, 0, 22, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 0, 0, 0, 0, 768, 769, 769, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 69, 70, 71, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 0, 73, 0, 0, 73, 0, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 70, 70, 71, 0, 0, 0, 0, 0, 0, 0, 22, 0, 22, 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 39, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 0, 0, 0, 18, 19, 19, 2, 2, 3, 0, 0, 0, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 71, 0, 69, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 762, 763, 764, 0, 0, 39, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 0, 1, 2, 2, 2, 19, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 22, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 1, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 765, 766, 767, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 0, 18, 19, 19, 19, 19, 19, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 1, 2, 2, 3, 35, 36, 36, 37, 763, 764, 0, 0, 0, 1, 2, 18, 20, 0, 18, 20, 2, 3, 0, 0, 0, 0, 22, 0, 0, 0, 0, 22, 762, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 768, 769, 770, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 762, 763, 764, 0, 0, 0, 0, 151, 152, 153, 0,},
+                    {19, 20, 0, 0, 0, 1, 2, 2, 2, 2, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 73, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 69, 70, 71, 0, 0, 22, 1, 2, 2, 3, 35, 36, 36, 37, 0, 0, 0, 765, 766, 767, 0, 1, 2, 18, 19, 19, 20, 0, 18, 19, 19, 20, 2, 3, 0, 0, 22, 5, 0, 0, 5, 22, 765, 766, 767, 69, 70, 71, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 0, 22, 765, 766, 767, 0, 0, 0, 0, 177, 178, 179, 0,},
+                    {19, 20, 0, 0, 0, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 39, 0, 0, 0, 73, 0, 73, 0, 0, 0, 39, 0, 39, 0, 39, 0, 0, 0, 0, 0, 0, 39, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 769, 770, 0, 35, 36, 36, 36, 36, 37, 0, 35, 36, 36, 36, 36, 37, 0, 0, 39, 39, 73, 73, 39, 39, 768, 769, 770, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 39, 0, 39, 0, 39, 0, 39, 0, 39, 768, 769, 770, 0, 0, 0, 0, 203, 204, 205, 0,},
                     {19, 11, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
             };
 
 
     public AquaFjords(Game game, Stage stage, ImageLoader imageLoader) throws FileNotFoundException {
+        super(game, stage, imageLoader);
+
         this.game = game;
         this.stage = stage;
-        this.imageLoader = imageLoader;
-
-        this.backgroundImage = new ImageView(imageLoader.loadImage("/images/AquaFjords.png"));
+        this.backgroundImage = new ImageView(imageLoader.loadImage("/images/Aqua Fjords.jpg"));
         this.gameWorld = new Pane();
         this.gamePane = new GamePane(backgroundImage.getImage());
         this.scene = new Scene(gamePane, 1000, 650);
@@ -90,6 +89,7 @@ public class AquaFjords {
         camera.setX(newCameraX);
     }
 
+    @Override
     public void createLevel() {
         // Create tile map
         gridPane = new GridPane();
@@ -98,248 +98,121 @@ public class AquaFjords {
                 int tileCode = mapData[i][j];
                 ImageView tileView = null;
                 try {
-                    InputStream bigSpriteStream = getClass().getResourceAsStream("/images/TechCityTileSet.png");
-                    bigSprite = new Sprite(bigSpriteStream, 32, 32);
-                    InputStream towerSpriteStream1 = getClass().getResourceAsStream("/images/Tech City Tower1.png");
-                    towerSprite1 = new Sprite(towerSpriteStream1, 30, 32);
-                    InputStream towerSpriteStream2 = getClass().getResourceAsStream("/images/Tech City Tower2.png");
-                    towerSprite2 = new Sprite(towerSpriteStream2, 34, 32);
-                    InputStream pipeSpriteStream = getClass().getResourceAsStream("/images/Tech City Pipe.png");
-                    pipeSprite = new Sprite(pipeSpriteStream, 34, 42);
+                    InputStream tileSpriteStream = getClass().getResourceAsStream("/images/AquaFjordsTileSet.png");
+                    tileSprite = new Sprite(tileSpriteStream, 72, 72);
+                    InputStream treeSpriteStream = getClass().getResourceAsStream("/images/AquaFjordsTree.png");
+                    treeSprite = new Sprite(treeSpriteStream, 19, 25);
+                    InputStream flagSpriteStream = getClass().getResourceAsStream("/images/AquaFjordsMarioFlag.jpeg");
+                    flagSprite = new Sprite(flagSpriteStream, 50, 33);
 
                     switch (tileCode) {
-                        case 31:
-                            tileView = new ImageView(bigSprite.getTile(0, 0));
-                            break;
-                        case 20:
-                        case 32:
-                        case 305:
-                            tileView = new ImageView(bigSprite.getTile(1, 0));
-                            break;
-                        case 33:
-                            tileView = new ImageView(bigSprite.getTile(2, 0));
-                            break;
-                        case 34:
-                            tileView = new ImageView(bigSprite.getTile(3, 0));
-                            break;
-                        case 35:
-                            tileView = new ImageView(bigSprite.getTile(4, 0));
-                            break;
-                        case 36:
-                            tileView = new ImageView(bigSprite.getTile(5, 0));
-                            break;
-                        case 37:
-                            tileView = new ImageView(bigSprite.getTile(6, 0));
-                            break;
-                        case 38:
-                            tileView = new ImageView(bigSprite.getTile(7, 0));
-                            break;
-                        case 39:
-                            tileView = new ImageView(bigSprite.getTile(0, 1));
-                            break;
-                        case 40:
-                            tileView = new ImageView(bigSprite.getTile(1, 1));
-                            break;
-                        case 17:
-                        case 41:
-                            tileView = new ImageView(bigSprite.getTile(2, 1));
-                            break;
-                        case 42:
-                            tileView = new ImageView(bigSprite.getTile(3, 1));
-                            break;
-                        case 43:
-                            tileView = new ImageView(bigSprite.getTile(4,1));
-                            break;
-                        case 44:
-                            tileView = new ImageView(bigSprite.getTile(5,1));
-                            break;
-                        case 45:
-                            tileView = new ImageView(bigSprite.getTile(6,1));
-                            break;
-                        case 96:
-                            tileView = new ImageView(bigSprite.getTile(7,1));
-                            break;
                         case 1:
-                        case 47:
-                            tileView = new ImageView(bigSprite.getTile(0,2));
-                            break;
-                        case 28:
-                        case 48:
-                            tileView = new ImageView(bigSprite.getTile(1,2));
-                            break;
-                        case 49:
-                            tileView = new ImageView(bigSprite.getTile(2,2));
-                            break;
-                        case 50:
-                            tileView = new ImageView(bigSprite.getTile(3,2));
-                            break;
-                        case 55:
-                            tileView = new ImageView(bigSprite.getTile(0,3));
-                            break;
-                        case 57:
-                            tileView = new ImageView(bigSprite.getTile(2,3));
-                            break;
-                        case 58:
-                            tileView = new ImageView(bigSprite.getTile(3,3));
-                            break;
-                        case 59:
-                            tileView = new ImageView(bigSprite.getTile(4,3));
-                            break;
-                        case 60:
-                            tileView = new ImageView(bigSprite.getTile(5,3));
-                            break;
-                        case 61:
-                            tileView = new ImageView(bigSprite.getTile(6,3));
-                            break;
-                        case 62:
-                            tileView = new ImageView(bigSprite.getTile(7,3));
-                            break;
-                        case 18:
-                        case 63:
-                            tileView = new ImageView(bigSprite.getTile(0,4));
-                            break;
-                        case 21:
-                        case 64:
-                            tileView = new ImageView(bigSprite.getTile(1,4));
-                            break;
-                        case 65:
-                            tileView = new ImageView(bigSprite.getTile(2,4));
-                            break;
-                        case 66:
-                        case 95:
-                            tileView = new ImageView(bigSprite.getTile(3,4));
-                            break;
-                        case 67:
-                            tileView = new ImageView(bigSprite.getTile(4,4));
-                            break;
-                        case 68:
-                            tileView = new ImageView(bigSprite.getTile(5,4));
-                            break;
-                        case 69:
-                            tileView = new ImageView(bigSprite.getTile(6,4));
-                            break;
-                        case 70:
-                            tileView = new ImageView(bigSprite.getTile(7,4));
-                            break;
-                        case 30:
-                        case 71:
-                            tileView = new ImageView(bigSprite.getTile(0,5));
-                            break;
-                        case 29:
-                        case 72:
-                            tileView = new ImageView(bigSprite.getTile(1,5));
-                            break;
-                        case 73:
-                            tileView = new ImageView(bigSprite.getTile(2,5));
-                            break;
-                        case 74:
-                            tileView = new ImageView(bigSprite.getTile(3,5));
-                            break;
-                        case 75:
-                            tileView = new ImageView(bigSprite.getTile(4,5));
-                            break;
-                        case 76:
-                            tileView = new ImageView(bigSprite.getTile(5,5));
-                            break;
-                        case 77:
-                            tileView = new ImageView(bigSprite.getTile(6,5));
-                            break;
-                        case 78:
-                            tileView = new ImageView(bigSprite.getTile(7,5));
-                            break;
-                        case 79:
-                            tileView = new ImageView(bigSprite.getTile(0,6));
-                            break;
-                        case 80:
-                            tileView = new ImageView(bigSprite.getTile(1,6));
-                            break;
-                        case 81:
-                            tileView = new ImageView(bigSprite.getTile(2,6));
-                            break;
-                        case 82:
-                            tileView = new ImageView(bigSprite.getTile(3,6));
-                            break;
-                        case 83:
-                            tileView = new ImageView(bigSprite.getTile(4,6));
-                            break;
-                        case 84:
-                            tileView = new ImageView(bigSprite.getTile(5,6));
-                            break;
-                        case 86:
-                            tileView = new ImageView(bigSprite.getTile(7,6));
-                            break;
-                        case 87:
-                            tileView = new ImageView(bigSprite.getTile(0,7));
-                            break;
-                        case 88:
-                            tileView = new ImageView(bigSprite.getTile(1,7));
-                            break;
-                        case 19:
-                        case 91:
-                            tileView = new ImageView(bigSprite.getTile(4,7));
-                            break;
-                        case 92:
-                            tileView = new ImageView(bigSprite.getTile(5,7));
-                            break;
-                        case 93:
-                            tileView = new ImageView(bigSprite.getTile(6,7));
-                            break;
-                        case 14:
-                            tileView = new ImageView(pipeSprite.getTile(0,0));
-                            break;
-                        case 15:
-                            tileView = new ImageView(pipeSprite.getTile(1,0));
-                            break;
-                        case 16:
-                            tileView = new ImageView(pipeSprite.getTile(2,0));
-                            break;
-                        case 25:
-                            tileView = new ImageView(towerSprite1.getTile(0,2));
-                            break;
-                        case 26:
-                            tileView = new ImageView(towerSprite1.getTile(0,3));
-                            break;
-                        case 27:
-                            tileView = new ImageView(towerSprite1.getTile(0,4));
+                            tileView = new ImageView(tileSprite.getTile(0, 0));
                             break;
                         case 2:
-                            tileView = new ImageView(towerSprite2.getTile(0,0));
+                            tileView = new ImageView(tileSprite.getTile(1, 0));
                             break;
                         case 3:
-                            tileView = new ImageView(towerSprite2.getTile(1,0));
-                            break;
-                        case 4:
-                            tileView = new ImageView(towerSprite2.getTile(0,1));
+                            tileView = new ImageView(tileSprite.getTile(2, 0));
                             break;
                         case 5:
-                            tileView = new ImageView(towerSprite2.getTile(1,1));
-                            break;
-                        case 6:
-                            tileView = new ImageView(towerSprite2.getTile(0,2));
-                            break;
-                        case 7:
-                            tileView = new ImageView(towerSprite2.getTile(1, 2));
-                            break;
-                        case 8:
-                            tileView = new ImageView(towerSprite2.getTile(0,3));
-                            break;
-                        case 9:
-                            tileView = new ImageView(towerSprite2.getTile(1, 3));
-                            break;
-                        case 10:
-                            tileView = new ImageView(towerSprite2.getTile(0,4));
+                            tileView = new ImageView(tileSprite.getTile(3, 0));
                             break;
                         case 11:
-                            tileView = new ImageView(towerSprite2.getTile(1, 4));
+                            tileView = new ImageView(tileSprite.getTile(8, 0));
                             break;
-                        case 12:
-                            tileView = new ImageView(towerSprite2.getTile(0,5));
+                        case 18:
+                            tileView = new ImageView(tileSprite.getTile(0, 1));
                             break;
-                        case 13:
-                            tileView = new ImageView(towerSprite2.getTile(1, 5));
+                        case 19:
+                            tileView = new ImageView(tileSprite.getTile(1, 1));
                             break;
-                        case 100:
-                            tileView = new ImageView(pipeSprite.getTile(2,0));
+                        case 20:
+                            tileView = new ImageView(tileSprite.getTile(2, 1));
+                            break;
+                        case 22:
+                            tileView = new ImageView(tileSprite.getTile(3, 1));
+                            break;
+                        case 28:
+                            tileView = new ImageView(tileSprite.getTile(8, 1));
+                            break;
+                        case 35:
+                            tileView = new ImageView(tileSprite.getTile(0, 2));
+                            break;
+                        case 36:
+                            tileView = new ImageView(tileSprite.getTile(1, 2));
+                            break;
+                        case 37:
+                            tileView = new ImageView(tileSprite.getTile(2,2));
+                            break;
+                        case 39:
+                            tileView = new ImageView(tileSprite.getTile(3,2));
+                            break;
+                        case 69:
+                            tileView = new ImageView(tileSprite.getTile(0,3));
+                            break;
+                        case 70:
+                            tileView = new ImageView(tileSprite.getTile(1,3));
+                            break;
+                        case 71:
+                            tileView = new ImageView(tileSprite.getTile(2,3));
+                            break;
+                        case 73:
+                            tileView = new ImageView(tileSprite.getTile(3,3));
+                            break;
+                        case 762:
+                            tileView = new ImageView(treeSprite.getTile(0,0));
+                            break;
+                        case 763:
+                            tileView = new ImageView(treeSprite.getTile(1,0));
+                            break;
+                        case 764:
+                            tileView = new ImageView(treeSprite.getTile(2,0));
+                            break;
+                        case 765:
+                            tileView = new ImageView(treeSprite.getTile(0,1));
+                            break;
+                        case 766:
+                            tileView = new ImageView(treeSprite.getTile(1,1));
+                            break;
+                        case 767:
+                            tileView = new ImageView(treeSprite.getTile(2,1));
+                            break;
+                        case 768:
+                            tileView = new ImageView(treeSprite.getTile(0,2));
+                            break;
+                        case 769:
+                            tileView = new ImageView(treeSprite.getTile(1,2));
+                            break;
+                        case 770:
+                            tileView = new ImageView(treeSprite.getTile(2,2));
+                            break;
+                        case 151:
+                            tileView = new ImageView(flagSprite.getTile(0,0));
+                            break;
+                        case 152:
+                            tileView = new ImageView(flagSprite.getTile(1,0));
+                            break;
+                        case 153:
+                            tileView = new ImageView(flagSprite.getTile(2,0));
+                            break;
+                        case 177:
+                            tileView = new ImageView(flagSprite.getTile(0,1));
+                            break;
+                        case 178:
+                            tileView = new ImageView(flagSprite.getTile(1,1));
+                            break;
+                        case 179:
+                            tileView = new ImageView(flagSprite.getTile(2,1));
+                            break;
+                        case 203:
+                            tileView = new ImageView(flagSprite.getTile(0,2));
+                            break;
+                        case 204:
+                            tileView = new ImageView(flagSprite.getTile(1,2));
+                            break;
+                        case 205:
+                            tileView = new ImageView(flagSprite.getTile(2,2));
                             break;
                         case 0:
                         default:
@@ -384,7 +257,7 @@ public class AquaFjords {
         scene = new Scene(gameWorld, sceneWidth, 650);
 
         // Add input handler
-        InputHandler inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
+        inputHandler = new InputHandler(game, gamePane, stage, this::show, quacky, this::restartGame);
         scene.setOnKeyPressed(event -> inputHandler.keyPressed(event));
         scene.setOnKeyReleased(event -> inputHandler.keyReleased(event));
 
@@ -395,10 +268,13 @@ public class AquaFjords {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= FRAME_TIME) {
-                    if (game.getGameStatus() == GameStatus.GAME_RUNNING) {
+                    if (game.getGameStatus() == GameStatus.GAME_RUNNING && !levelCompleted) {
                         quacky.update(now);
-                        checkCollisions();
-                        debugRender();
+                        try {
+                            checkCollisions();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         updateCamera();
                         updateBackground();
 
@@ -411,6 +287,8 @@ public class AquaFjords {
                             game.setGameStatus(GameStatus.GAME_OVER);
                             showGameOver();
                         }
+                    } else if (!levelCompleted) {
+                        this.stop();
                     }
 
                     lastUpdate = now;
@@ -436,7 +314,9 @@ public class AquaFjords {
         gridPane.setTranslateX(cameraX);
     }
 
+    @Override
     public void show() {
+        resetLevelState();
         stage.setScene(scene);
         stage.show();
     }
@@ -448,6 +328,7 @@ public class AquaFjords {
         gameOverText.toFront();
     }
 
+    @Override
     public void restartGame() {
         quacky.respawn();
         gameOver = false;
@@ -457,7 +338,7 @@ public class AquaFjords {
         game.setGameStatus(GameStatus.GAME_RUNNING);
     }
 
-    private void checkCollisions() {
+    private void checkCollisions() throws IOException {
         int tileSize = 50; // Adjust this to match your tile size
         int quackyTileX = (int) (quacky.getX() / tileSize);
         int quackyTileY = (int) (quacky.getY() / tileSize);
@@ -474,8 +355,9 @@ public class AquaFjords {
                     );
 
                     if (quacky.getBoundingBox().intersects(tileBounds)) {
-                        if (tileCode == 100) {
-                            // Handle collision with pipe
+                        if (tileCode == 151 || tileCode == 152 || tileCode == 153 || tileCode == 177 || tileCode == 178 || tileCode == 179 || tileCode == 203 || tileCode == 204 || tileCode == 205 && !levelCompleted) {
+                            levelComplete();
+                            return;
                         } else {
                             handleCollision(quacky, tileBounds);
                         }
@@ -511,44 +393,15 @@ public class AquaFjords {
         }
     }
 
-    private void debugRender() {
-        // Clear previous debug visuals
-        gameWorld.getChildren().removeIf(node -> node instanceof Rectangle);
-
-        // Render Quacky's collision box
-        Rectangle quackyBox = new Rectangle(
-                quacky.getX(),
-                quacky.getY(),
-                quacky.getSprite().getFitWidth(),
-                quacky.getSprite().getFitHeight()
-        );
-        quackyBox.setFill(Color.TRANSPARENT);
-        quackyBox.setStroke(Color.RED);
-        gameWorld.getChildren().add(quackyBox);
-
-        // Render visible tile collision boxes
-        int tileSize = 50;
-        int startX = (int) (camera.getX() / tileSize);
-        double endX = startX + (viewWidth / tileSize) + 1;
-
-        for (int y = 0; y < mapData.length; y++) {
-            for (int x = startX; x < endX && x < mapData[0].length; x++) {
-                if (mapData[y][x] != 0) {
-                    Rectangle tileBox = new Rectangle(
-                            x * tileSize - camera.getX(),
-                            y * tileSize,
-                            tileSize,
-                            tileSize
-                    );
-                    tileBox.setFill(Color.TRANSPARENT);
-                    tileBox.setStroke(Color.BLUE);
-                    gameWorld.getChildren().add(tileBox);
-                }
-            }
-        }
-    }
-
     private double getBottomBoundary() {
         return mapData.length * spriteSize - quacky.getSprite().getFitHeight();
+    }
+
+    private void levelComplete() {
+        if(!levelCompleted) {
+            levelCompleted = true;
+            game.setGameStatus(GameStatus.LEVEL_TRANSITIONING);
+            // Any other level completion logic
+        }
     }
 }

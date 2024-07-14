@@ -15,4 +15,10 @@ public abstract class Level {
 
     public abstract void createLevel();
     public abstract void show();
+    public abstract void restartGame();
+
+    public void resetLevelState() {
+        game.setGameStatus(GameStatus.GAME_RUNNING);
+        // Reset any other level-specific states here
+    }
 }

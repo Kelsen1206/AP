@@ -41,7 +41,7 @@ public class Game extends Application {
 
         soundManager.playBackgroundMusic();
 
-        levelManager = new LevelManager(this, primaryStage, imageLoader);
+        levelManager = new LevelManager(this, imageLoader);
         settingsMenu = new SettingsMenu(this, levelManager, primaryStage);
 
         showMainScreen();
@@ -57,13 +57,17 @@ public class Game extends Application {
 
     public void setGameStatus(GameStatus gameStatus){
         this.gameStatus = gameStatus;
-        if (gameStatus == GameStatus.LEVEL_COMPLETED) {
+        if (this.gameStatus == GameStatus.LEVEL_TRANSITIONING) {
             try {
                 levelManager.startNextLevel();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Stage getCurrentStage(){
+        return primaryStage;
     }
 
     void showMainScreen(){

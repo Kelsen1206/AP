@@ -78,6 +78,7 @@ public class SettingsMenu {
 
     private void quitToMainMenu() {
         game.setGameStatus(GameStatus.MAIN_MENU_SCREEN);
+        levelManager.setCurrentLevelIndex(0);
         game.showGameMenu();
     }
 }

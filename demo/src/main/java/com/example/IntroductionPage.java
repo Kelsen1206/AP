@@ -133,7 +133,6 @@ public class IntroductionPage {
     }
 
     private void startGame() throws IOException {
-        game.setGameStatus(GameStatus.GAME_RUNNING);
         game.initializeGame();
     }
 }
