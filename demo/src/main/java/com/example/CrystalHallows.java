@@ -68,6 +68,7 @@ public class CrystalHallows extends Level{
         this.gamePane = new GamePane(backgroundImage.getImage());
         this.scene = new Scene(gamePane, 1000, 650);
         this.camera = new Camera();
+
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
         soundManager.playBackgroundMusic("Crystal");

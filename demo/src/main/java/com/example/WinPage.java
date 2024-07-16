@@ -23,6 +23,7 @@ public class WinPage {
     private Stage stage;
     private int currentWinIndex = 0;
     private GameStatus gameStatus;
+    private SoundManager soundManager;
     private final String[] WinImages = {
             "Win1.png",
             "Win2.png",
@@ -48,6 +49,10 @@ public class WinPage {
         this.game = game;
         this.stage = stage;
         this.gameStatus = GameStatus.CONGRATULATIONS;
+
+        this.soundManager = SoundManager.getInstance();
+        soundManager.loadSounds();
+        soundManager.playBackgroundMusic("Win");
     }
 
     public void show() throws IOException {

@@ -12,10 +12,15 @@ import javafx.stage.Stage;
 public class GameMenu {
     private Game game;
     private Stage stage;
+    private SoundManager soundManager;
 
     public GameMenu(Game game, Stage stage) {
         this.game = game;
         this.stage = stage;
+
+        this.soundManager = SoundManager.getInstance();
+        soundManager.loadSounds();
+        soundManager.playBackgroundMusic("mainmenu");
     }
 
     public void showMenu() {
@@ -30,10 +35,25 @@ public class GameMenu {
         Button userGuideButton = createImageButton("/images/Userguide button.png");
         Button settingsButton = createImageButton("/images/Settings button.png");
 
-        loginButton.setOnAction(event -> showLoginPage());
-        signUpButton.setOnAction(event -> showSignUpPage());
-        userGuideButton.setOnAction(event -> showUserGuidePage());
-        settingsButton.setOnAction(event -> showSettingsPage());
+        loginButton.setOnAction(event -> {
+            showLoginPage();
+            game.setGameStatus(GameStatus.LOGIN_SCREEN);
+        });
+
+        signUpButton.setOnAction(event -> {
+            showSignUpPage();
+            game.setGameStatus(GameStatus.SIGNUP_SCREEN);
+        });
+
+        userGuideButton.setOnAction(event -> {
+            showUserGuidePage();
+            game.setGameStatus(GameStatus.USER_GUIDE_SCREEN);
+        });
+
+        settingsButton.setOnAction(event -> {
+            showSettingsPage();
+            game.setGameStatus(GameStatus.SETTINGS_SCREEN);
+        });
 
         menuBox.getChildren().addAll(loginButton, signUpButton, userGuideButton, settingsButton);
 

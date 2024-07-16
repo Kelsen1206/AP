@@ -30,6 +30,7 @@ public class SettingsPage {
         this.gamePane = gamePane;
         this.game = game;
         this.stage = stage;
+
         this.soundManager = SoundManager.getInstance();
     }
 

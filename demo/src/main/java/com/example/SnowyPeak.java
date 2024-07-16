@@ -31,8 +31,8 @@ public class SnowyPeak extends Level{
     private final double viewWidth = 400;
     private Camera camera;
     private static final long FRAME_TIME = 8_333_333;
-    private int initialX = 100;
     private int initialY = 200;
+    private int initialX = 100;
     private SoundManager soundManager;
     private boolean gameOver;
     private Text gameOverText;

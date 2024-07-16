@@ -35,12 +35,13 @@ public class SoundManager {
 
         // Load background music
         loadBackgroundMusic("main", "/audio/Starting.wav");
-        loadBackgroundMusic("Aqua", "/audio/Aqua.wav");
+        loadBackgroundMusic("mainmenu", "/audio/MainMenu.wav");
+
         loadBackgroundMusic("Crystal", "/audio/Crystal.wav");
-        loadBackgroundMusic("Mystic", "/audio/Mystic.wav");
         loadBackgroundMusic("Snowy", "/audio/Snowy.wav");
         loadBackgroundMusic("Taylors", "/audio/Taylors.wav");
-        loadBackgroundMusic("TechCity", "/audio/TechCity.wav");
+
+        loadBackgroundMusic("Win", "/audio/Win.wav");
     }
 
     private void loadSoundEffect(String name, String path) {
@@ -105,9 +106,12 @@ public class SoundManager {
     }
 
     public void setVolume(float volume) {
-        this.volume = volume;
+        this.volume = Math.max(0, Math.min(1, volume));
         if (currentBackgroundMusic != null) {
-            setClipVolume(currentBackgroundMusic, volume);
+            setClipVolume(currentBackgroundMusic, this.volume);
+        }
+        for (Clip clip : soundEffects.values()) {
+            setClipVolume(clip, this.volume);
         }
     }
 
@@ -125,8 +129,14 @@ public class SoundManager {
     private void setClipVolume(Clip clip, float volume) {
         if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            float dB = (float) (Math.log(volume) / Math.log(10.0) * 20.0);
-            gainControl.setValue(dB);
+            float range = gainControl.getMaximum() - gainControl.getMinimum();
+            float gain;
+            if (volume > 0) {
+                gain = (range * volume) + gainControl.getMinimum();
+            } else {
+                gain = gainControl.getMinimum();
+            }
+            gainControl.setValue(gain);
         }
     }
 }
