@@ -1,4 +1,3 @@
-
 package com.example;
 
 import javafx.geometry.Rectangle2D;
@@ -32,6 +31,11 @@ public class Quacky {
     private static final long DIE_FRAME_DURATION = 200_000_000;
     private boolean isDead;
     private double respawnX, respawnY;
+    private Image[] attackFrames;
+    private boolean isAttacking;
+    private int attackFrameIndex;
+    private long lastAttackFrameChange;
+    private static final long ATTACK_FRAME_DURATION = 100_000_000; // 100 ms
 
     public Quacky(double startX, double startY, double leftBoundary, double rightBoundary, SoundManager soundManager) {
         this.x = startX;
@@ -263,4 +267,5 @@ public class Quacky {
             }
         }
     }
+
 }

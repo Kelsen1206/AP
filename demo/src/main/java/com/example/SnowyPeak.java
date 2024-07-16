@@ -16,6 +16,9 @@ import javafx.scene.text.Text;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SnowyPeak extends Level{
     private double spriteSize = 50;
@@ -26,6 +29,7 @@ public class SnowyPeak extends Level{
     private GridPane gridPane;
     private Scene scene;
     private Sprite tileSprite;
+    private Sprite SnowyShardSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
@@ -38,6 +42,7 @@ public class SnowyPeak extends Level{
     private Text gameOverText;
     private InputHandler inputHandler;
     private boolean levelCompleted;
+    private static final Set<Integer> PASSABLE_BLOCKS = new HashSet<>(Arrays.asList(3, 14, 15, 21, 22, 23, 24, 25));
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -47,7 +52,7 @@ public class SnowyPeak extends Level{
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 0, 9, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 3, 3, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 1, 0, 0, 1, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 3, 3, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 10, 3, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 6, 3, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 21, 0, 16, 0, 1, 0, 0, 0, 1, 6, 5, 0, 0, 0, 0, 0, 0, 1, 4, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 9, 3, 0, 0, 22, 3, 8, 0, 0, 0, 11, 11, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 10, 3, 5, 0, 0, 0, 0, 0, 0, 0, 5, 5, 6, 3, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 21, 0, 16, 0, 1, 0, 0, 0, 1, 6, 5, 0, 0, 0, 0, 0, 0, 1, 4, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 9, 3, 0, 0, 22, 3, 8, 0, 0, 0, 11, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 17, 0, 0, 0, 1, 3, 3, 10, 3, 3, 3, 8, 18, 19, 20, 0, 0, 5, 0, 0, 3, 6, 5, 5, 5, 5, 5, 5, 5, 0, 0, 5, 5, 6, 3, 3, 0, 0, 0, 0, 0, 14, 15, 0, 0, 16, 0, 0, 21, 0, 22, 0, 21, 0, 25, 0, 17, 0, 0, 0, 1, 5, 5, 0, 0, 0, 0, 0, 0, 10, 4, 2, 3, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 8, 9, 0, 22, 0, 0, 0, 8, 9, 0, 0, 0, 0, 0, 15, 0, 22, 0, 0, 21, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 9, 13, 22, 14, 15, 0, 22, 13, 8, 0, 0, 0, 15, 0, 0, 0},
                     {0, 0, 0, 0, 1, 22, 0, 0, 9, 1, 3, 18, 19, 20, 3, 3, 3, 1, 24, 1, 15, 0, 5, 0, 0, 3, 5, 5, 16, 0, 22, 0, 0, 0, 0, 0, 5, 3, 3, 3, 3, 0, 0, 0, 0, 0, 5, 5, 0, 0, 21, 0, 0, 22, 0, 0, 0, 22, 0, 0, 0, 22, 0, 0, 0, 1, 0, 1, 0, 0, 0, 15, 0, 0, 0, 0, 0, 22, 0, 0, 15, 0, 10, 4, 2, 3, 0, 0, 0, 0, 1, 5, 5, 5, 5, 0, 0, 16, 0, 0, 16, 0, 0, 16, 0, 1, 3, 0, 22, 0, 0, 0, 0, 0, 0, 18, 19, 20, 8, 9, 0, 18, 19, 20, 0, 0, 16, 0, 16, 0, 0, 0, 16, 0, 16, 0, 0, 0, 16, 0, 0, 0, 0, 9, 3, 16, 0, 18, 19, 20, 0, 16, 3, 8, 10, 10, 10, 0, 0, 0},
                     {0, 0, 9, 5, 5, 5, 5, 5, 5, 3, 3, 8, 24, 25, 0, 9, 3, 3, 5, 5, 5, 4, 5, 0, 0, 3, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 17, 18, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 2, 18, 19, 20, 0, 0, 0, 0, 1, 14, 15, 14, 5, 0, 0, 21, 0, 0, 21, 0, 0, 21, 0, 1, 3, 18, 19, 20, 0, 0, 0, 0, 0, 23, 24, 25, 0, 0, 0, 23, 24, 25, 0, 0, 21, 15, 21, 0, 16, 0, 21, 0, 21, 0, 0, 15, 21, 0, 0, 0, 9, 3, 0, 21, 0, 23, 24, 25, 0, 21, 0, 3, 8, 17, 18, 19, 20, 0},
@@ -99,6 +104,8 @@ public class SnowyPeak extends Level{
                 try {
                     InputStream tileSpriteStream = getClass().getResourceAsStream("/images/SnowyPeakTileSet.png");
                     tileSprite = new Sprite(tileSpriteStream, 32, 32);
+                    InputStream SnowyShardSpriteStream = getClass().getResourceAsStream("/images/Snowy_Shard.png");
+                    SnowyShardSprite = new Sprite(SnowyShardSpriteStream, 113,99);
 
                     switch (tileCode) {
                         case 1:
@@ -168,7 +175,7 @@ public class SnowyPeak extends Level{
                             tileView = new ImageView(tileSprite.getTile(4,4));
                             break;
                         case 11:
-                            tileView = new ImageView(tileSprite.getTile(0,2));
+                            tileView = new ImageView(SnowyShardSprite.getTile(0,0));
                             break;
                         case 0:
                         default:
@@ -295,14 +302,14 @@ public class SnowyPeak extends Level{
     }
 
     private void checkCollisions() throws IOException {
-        int tileSize = 50; // Adjust this to match your tile size
+        int tileSize = 50;
         int quackyTileX = (int) (quacky.getX() / tileSize);
         int quackyTileY = (int) (quacky.getY() / tileSize);
 
         for (int y = Math.max(0, quackyTileY - 1); y <= Math.min(mapData.length - 1, quackyTileY + 2); y++) {
             for (int x = Math.max(0, quackyTileX - 1); x <= Math.min(mapData[0].length - 1, quackyTileX + 2); x++) {
                 int tileCode = mapData[y][x];
-                if (tileCode != 0) {  // If it's not an empty tile
+                if (tileCode != 0 && !PASSABLE_BLOCKS.contains(tileCode)) {  // Check if it's not a passable block
                     Rectangle2D tileBounds = new Rectangle2D(
                             x * tileSize,
                             y * tileSize,
@@ -360,4 +367,5 @@ public class SnowyPeak extends Level{
             // Any other level completion logic
         }
     }
+
 }

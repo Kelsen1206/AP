@@ -16,6 +16,10 @@ import javafx.scene.text.Text;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class TechCity extends Level{
     private double spriteSize = 50;
@@ -29,6 +33,7 @@ public class TechCity extends Level{
     private Sprite towerSprite1;
     private Sprite towerSprite2;
     private Sprite pipeSprite;
+    private Sprite TechShardSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
@@ -41,6 +46,7 @@ public class TechCity extends Level{
     private Text gameOverText;
     private InputHandler inputHandler;
     private boolean levelCompleted;
+    private static final Set<Integer> PASSABLE_BLOCKS = new HashSet<>(Arrays.asList(4, 5, 7, 8, 9, 10, 11, 25, 26, 27, 2, 3, 6, 12, 13, 79, 80, 81, 82, 83, 84, 86, 87, 88, 92, 93 ));
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -70,6 +76,7 @@ public class TechCity extends Level{
         this.camera = new Camera();
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
+        soundManager.playBackgroundMusic("TechCity");
 
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
@@ -107,6 +114,8 @@ public class TechCity extends Level{
                     towerSprite2 = new Sprite(towerSpriteStream2, 34, 32);
                     InputStream pipeSpriteStream = getClass().getResourceAsStream("/images/Tech City Pipe.png");
                     pipeSprite = new Sprite(pipeSpriteStream, 34, 42);
+                    InputStream TechShardSpriteStream = getClass().getResourceAsStream("/images/Tech_shard.png");
+                    TechShardSprite = new Sprite(TechShardSpriteStream, 100, 96);
 
                     switch (tileCode) {
                         case 31:
@@ -340,7 +349,7 @@ public class TechCity extends Level{
                             tileView = new ImageView(towerSprite2.getTile(1, 5));
                             break;
                         case 100:
-                            tileView = new ImageView(pipeSprite.getTile(2,0));
+                            tileView = new ImageView(TechShardSprite.getTile(0,0));
                             break;
                         case 0:
                         default:
@@ -474,7 +483,7 @@ public class TechCity extends Level{
         for (int y = Math.max(0, quackyTileY - 1); y <= Math.min(mapData.length - 1, quackyTileY + 2); y++) {
             for (int x = Math.max(0, quackyTileX - 1); x <= Math.min(mapData[0].length - 1, quackyTileX + 2); x++) {
                 int tileCode = mapData[y][x];
-                if (tileCode != 0) {  // If it's not an empty tile
+                if (tileCode != 0 && !PASSABLE_BLOCKS.contains(tileCode)) {  // Check if it's not a passable block
                     Rectangle2D tileBounds = new Rectangle2D(
                             x * tileSize,
                             y * tileSize,

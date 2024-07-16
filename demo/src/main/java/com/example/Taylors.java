@@ -16,6 +16,9 @@ import javafx.scene.text.Text;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Taylors extends Level {
     private double spriteSize = 50;
@@ -31,6 +34,7 @@ public class Taylors extends Level {
     private Sprite moneySprite;
     private Sprite redTreeSprite;
     private Sprite greenTreeSprite;
+    private Sprite TaylorsShardSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
@@ -43,11 +47,12 @@ public class Taylors extends Level {
     private Text gameOverText;
     private InputHandler inputHandler;
     private boolean levelCompleted;
+    private static final Set<Integer> PASSABLE_BLOCKS = new HashSet<>(Arrays.asList(5, 6, 7, 8, 35, 84, 87, 88 , 89 , 95 , 121));
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 28, 28, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296, 297, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 36, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 36, 88, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 33, 42, 0, 0, 0, 0, 0, 0, 35, 0, 35, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 298, 299, 0, 0, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 84, 36, 36, 36, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 36, 0, 84, 36, 0, 0, 36, 0, 36, 36, 0, 0, 36, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 15, 16, 17, 0, 0, 0, 33, 34, 0, 0, 0, 0, 0, 43, 34, 0, 0, 0, 35, 45, 35, 45, 35, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 301, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 23, 24, 25, 26, 0, 0, 0, 0, 84, 36, 36, 95, 36, 36, 121, 0, 0, 0, 0, 0, 0, 0, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 36, 36, 36, 89, 0, 36, 36, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 1, 34, 0, 33, 2, 3, 34, 0, 33, 2, 34, 0, 33, 2, 2, 34, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 34, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 45, 0, 45, 0, 45, 0},
@@ -78,7 +83,7 @@ public class Taylors extends Level {
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
         gameOverText.setFont(Font.loadFont(getClass().getResourceAsStream( "/fonts/ARCADE_N.ttf"), 45));
-        gameOverText.setFill(Color.WHITE);
+        gameOverText.setFill(Color.BLACK);
         gameOverText.setTextAlignment(TextAlignment.CENTER);
         gameOverText.setVisible(false);
     }
@@ -104,16 +109,18 @@ public class Taylors extends Level {
                 try {
                     InputStream bigSpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
                     bigSprite = new Sprite(bigSpriteStream, 32, 32);
-                    InputStream greenTreeSpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
-                    greenTreeSprite = new Sprite(greenTreeSpriteStream, 32, 32);
-                    InputStream redTreeSpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
-                    redTreeSprite = new Sprite(redTreeSpriteStream, 32, 32);
-                    InputStream boxSpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
-                    boxSprite = new Sprite(boxSpriteStream, 32, 32);
-                    InputStream stoneSpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
-                    stoneSprite = new Sprite(stoneSpriteStream, 32, 32);
-                    InputStream moneySpriteStream = getClass().getResourceAsStream("/images/TaylorsTileSet.png");
-                    moneySprite = new Sprite(moneySpriteStream, 32, 32);
+                    InputStream greenTreeSpriteStream = getClass().getResourceAsStream("/images/Green tree.png");
+                    greenTreeSprite = new Sprite(greenTreeSpriteStream, 31, 34);
+                    InputStream redTreeSpriteStream = getClass().getResourceAsStream("/images/Red tree.png");
+                    redTreeSprite = new Sprite(redTreeSpriteStream, 34, 34);
+                    InputStream boxSpriteStream = getClass().getResourceAsStream("/images/box.png");
+                    boxSprite = new Sprite(boxSpriteStream, 114, 63);
+                    InputStream stoneSpriteStream = getClass().getResourceAsStream("/images/stone.jpeg");
+                    stoneSprite = new Sprite(stoneSpriteStream, 35, 16);
+                    InputStream moneySpriteStream = getClass().getResourceAsStream("/images/Money.png");
+                    moneySprite = new Sprite(moneySpriteStream, 26, 24);
+                    InputStream TaylorsShardSpriteStream = getClass().getResourceAsStream("/images/Taylor's Shard.png");
+                    TaylorsShardSprite = new Sprite(TaylorsShardSpriteStream, 107, 98);
 
                     switch (tileCode) {
                         case 1:
@@ -277,7 +284,7 @@ public class Taylors extends Level {
                             tileView = new ImageView(redTreeSprite.getTile(1,3));
                             break;
                         case 28:
-                            tileView = new ImageView(bigSprite.getTile(1,7));
+                            tileView = new ImageView(TaylorsShardSprite.getTile(0,0));
                             break;
                         case 0:
                         default:
@@ -410,7 +417,7 @@ public class Taylors extends Level {
         for (int y = Math.max(0, quackyTileY - 1); y <= Math.min(mapData.length - 1, quackyTileY + 2); y++) {
             for (int x = Math.max(0, quackyTileX - 1); x <= Math.min(mapData[0].length - 1, quackyTileX + 2); x++) {
                 int tileCode = mapData[y][x];
-                if (tileCode != 0) {  // If it's not an empty tile
+                if (tileCode != 0 && !PASSABLE_BLOCKS.contains(tileCode)) {  // Check if it's not a passable block
                     Rectangle2D tileBounds = new Rectangle2D(
                             x * tileSize,
                             y * tileSize,

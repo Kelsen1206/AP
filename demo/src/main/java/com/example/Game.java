@@ -35,7 +35,7 @@ public class Game extends Application {
         gameStatus = GameStatus.MAIN_SCREEN;
 
         quacky = new Quacky(50,500, 50, 950, soundManager);
-
+//        Enemy1 = new Enemy(,50,-1,0);
         soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
 

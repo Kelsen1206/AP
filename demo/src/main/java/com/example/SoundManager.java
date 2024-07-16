@@ -36,11 +36,13 @@ public class SoundManager {
         // Load background music
         loadBackgroundMusic("main", "/audio/Starting.wav");
         loadBackgroundMusic("mainmenu", "/audio/MainMenu.wav");
-
+        loadBackgroundMusic("Intro", "/audio/Intro.wav");
+        loadBackgroundMusic("Mystic", "/audio/Mystic.wav");
         loadBackgroundMusic("Crystal", "/audio/Crystal.wav");
         loadBackgroundMusic("Snowy", "/audio/Snowy.wav");
+        loadBackgroundMusic("Aqua", "/audio/Aqua.wav");
+        loadBackgroundMusic("TechCity", "/audio/TechCity.wav");
         loadBackgroundMusic("Taylors", "/audio/Taylors.wav");
-
         loadBackgroundMusic("Win", "/audio/Win.wav");
     }
 

@@ -26,6 +26,7 @@ public class IntroductionPage {
     private int currentIntroIndex = 0;
     private GameStatus gameStatus;
     private LevelManager levelManager;
+    private SoundManager soundManager;
     private final String[] introImages = {
         "intro1.png",
         "intro2.png",
@@ -54,6 +55,10 @@ public class IntroductionPage {
         this.game = game;
         this.stage = stage;
         this.gameStatus = GameStatus.INTRO_SCREEN;
+
+        this.soundManager = SoundManager.getInstance();
+        soundManager.loadSounds();
+        soundManager.playBackgroundMusic("Intro");
     }
 
     public void show() throws IOException {

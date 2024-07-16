@@ -12,10 +12,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
+import java.io.InputStream;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AquaFjords extends Level{
     private double spriteSize = 50;
@@ -28,6 +31,7 @@ public class AquaFjords extends Level{
     private Sprite tileSprite;
     private Sprite treeSprite;
     private Sprite flagSprite;
+    private Sprite AquaShardSprite;
     private Pane gameWorld;
     private Quacky quacky;
     private final double viewWidth = 400;
@@ -40,6 +44,7 @@ public class AquaFjords extends Level{
     private Text gameOverText;
     private InputHandler inputHandler;
     private boolean levelCompleted;
+    private static final Set<Integer> PASSABLE_BLOCKS = new HashSet<>(Arrays.asList(762, 763, 764, 765, 766, 767, 768, 769, 770, 150, 151, 152, 153, 180, 177, 178, 179, 206, 203, 204, 205, 180, 72, 71, 78, 79, 84, 73, 81, 82, 85, 86, 87, 84 ));
     int[][] mapData =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -50,9 +55,9 @@ public class AquaFjords extends Level{
                     {19, 20, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 39, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
                     {19, 20, 0, 0, 0, 0, 0, 0, 18, 19, 19, 2, 2, 3, 0, 0, 0, 0, 69, 70, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 70, 71, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 71, 0, 69, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 762, 763, 764, 0, 0, 39, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
                     {19, 20, 0, 0, 0, 0, 1, 2, 2, 2, 19, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 22, 0, 0, 73, 0, 39, 0, 73, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 1, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 765, 766, 767, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
-                    {19, 20, 0, 0, 0, 0, 18, 19, 19, 19, 19, 19, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 1, 2, 2, 3, 35, 36, 36, 37, 763, 764, 0, 0, 0, 1, 2, 18, 20, 0, 18, 20, 2, 3, 0, 0, 0, 0, 22, 0, 0, 0, 0, 22, 762, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 768, 769, 770, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 762, 763, 764, 0, 0, 0, 0, 151, 152, 153, 0,},
-                    {19, 20, 0, 0, 0, 1, 2, 2, 2, 2, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 73, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 69, 70, 71, 0, 0, 22, 1, 2, 2, 3, 35, 36, 36, 37, 0, 0, 0, 765, 766, 767, 0, 1, 2, 18, 19, 19, 20, 0, 18, 19, 19, 20, 2, 3, 0, 0, 22, 5, 0, 0, 5, 22, 765, 766, 767, 69, 70, 71, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 0, 22, 765, 766, 767, 0, 0, 0, 0, 177, 178, 179, 0,},
-                    {19, 20, 0, 0, 0, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 39, 0, 0, 0, 73, 0, 73, 0, 0, 0, 39, 0, 39, 0, 39, 0, 0, 0, 0, 0, 0, 39, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 769, 770, 0, 35, 36, 36, 36, 36, 37, 0, 35, 36, 36, 36, 36, 37, 0, 0, 39, 39, 73, 73, 39, 39, 768, 769, 770, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 39, 0, 39, 0, 39, 0, 39, 0, 39, 768, 769, 770, 0, 0, 0, 0, 203, 204, 205, 0,},
+                    {19, 20, 0, 0, 0, 0, 18, 19, 19, 19, 19, 19, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 22, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 1, 2, 2, 3, 35, 36, 36, 37, 763, 764, 0, 0, 0, 1, 2, 18, 20, 0, 18, 20, 2, 3, 0, 0, 0, 0, 22, 0, 0, 0, 0, 22, 762, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 0, 768, 769, 770, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 762, 763, 764, 0, 0, 0, 0, 0, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 1, 2, 2, 2, 2, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 1, 2, 3, 0, 0, 18, 19, 20, 0, 0, 18, 19, 20, 0, 0, 22, 0, 0, 0, 0, 73, 0, 0, 0, 0, 5, 0, 22, 0, 22, 0, 69, 70, 71, 0, 0, 22, 1, 2, 2, 3, 35, 36, 36, 37, 0, 0, 0, 765, 766, 767, 0, 1, 2, 18, 19, 19, 20, 0, 18, 19, 19, 20, 2, 3, 0, 0, 22, 5, 0, 0, 5, 22, 765, 766, 767, 69, 70, 71, 0, 0, 0, 1, 2, 2, 3, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 1, 2, 2, 3, 0, 0, 0, 5, 0, 22, 0, 22, 0, 22, 0, 22, 765, 766, 767, 0, 0, 0, 0, 718, 0, 0, 0,},
+                    {19, 20, 0, 0, 0, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 0, 0, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 35, 36, 37, 0, 0, 39, 0, 0, 0, 73, 0, 73, 0, 0, 0, 39, 0, 39, 0, 39, 0, 0, 0, 0, 0, 0, 39, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 769, 770, 0, 35, 36, 36, 36, 36, 37, 0, 35, 36, 36, 36, 36, 37, 0, 0, 39, 39, 73, 73, 39, 39, 768, 769, 770, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 37, 0, 0, 0, 39, 0, 39, 0, 39, 0, 39, 0, 39, 768, 769, 770, 0, 0, 0, 0, 0, 0, 0, 0,},
                     {19, 11, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
             };
 
@@ -69,6 +74,7 @@ public class AquaFjords extends Level{
         this.camera = new Camera();
         this.soundManager = SoundManager.getInstance();
         soundManager.loadSounds();
+        soundManager.playBackgroundMusic("Aqua");
 
         gameOver = false;
         gameOverText = new Text("GAME OVER\nPress SPACE to respawn");
@@ -102,8 +108,8 @@ public class AquaFjords extends Level{
                     tileSprite = new Sprite(tileSpriteStream, 72, 72);
                     InputStream treeSpriteStream = getClass().getResourceAsStream("/images/AquaFjordsTree.png");
                     treeSprite = new Sprite(treeSpriteStream, 19, 25);
-                    InputStream flagSpriteStream = getClass().getResourceAsStream("/images/AquaFjordsMarioFlag.jpeg");
-                    flagSprite = new Sprite(flagSpriteStream, 50, 33);
+                    InputStream AquaShardSpriteStream = getClass().getResourceAsStream("/images/Aqua_Shard.png");
+                    AquaShardSprite = new Sprite(AquaShardSpriteStream,105,106);
 
                     switch (tileCode) {
                         case 1:
@@ -187,32 +193,8 @@ public class AquaFjords extends Level{
                         case 770:
                             tileView = new ImageView(treeSprite.getTile(2,2));
                             break;
-                        case 151:
-                            tileView = new ImageView(flagSprite.getTile(0,0));
-                            break;
-                        case 152:
-                            tileView = new ImageView(flagSprite.getTile(1,0));
-                            break;
-                        case 153:
-                            tileView = new ImageView(flagSprite.getTile(2,0));
-                            break;
-                        case 177:
-                            tileView = new ImageView(flagSprite.getTile(0,1));
-                            break;
-                        case 178:
-                            tileView = new ImageView(flagSprite.getTile(1,1));
-                            break;
-                        case 179:
-                            tileView = new ImageView(flagSprite.getTile(2,1));
-                            break;
-                        case 203:
-                            tileView = new ImageView(flagSprite.getTile(0,2));
-                            break;
-                        case 204:
-                            tileView = new ImageView(flagSprite.getTile(1,2));
-                            break;
-                        case 205:
-                            tileView = new ImageView(flagSprite.getTile(2,2));
+                        case 718:
+                            tileView = new ImageView(AquaShardSprite.getTile(0,0));
                             break;
                         case 0:
                         default:
@@ -346,7 +328,7 @@ public class AquaFjords extends Level{
         for (int y = Math.max(0, quackyTileY - 1); y <= Math.min(mapData.length - 1, quackyTileY + 2); y++) {
             for (int x = Math.max(0, quackyTileX - 1); x <= Math.min(mapData[0].length - 1, quackyTileX + 2); x++) {
                 int tileCode = mapData[y][x];
-                if (tileCode != 0) {  // If it's not an empty tile
+                if (tileCode != 0 && !PASSABLE_BLOCKS.contains(tileCode)) {  // Check if it's not a passable block
                     Rectangle2D tileBounds = new Rectangle2D(
                             x * tileSize,
                             y * tileSize,
@@ -355,7 +337,7 @@ public class AquaFjords extends Level{
                     );
 
                     if (quacky.getBoundingBox().intersects(tileBounds)) {
-                        if (tileCode == 151 || tileCode == 152 || tileCode == 153 || tileCode == 177 || tileCode == 178 || tileCode == 179 || tileCode == 203 || tileCode == 204 || tileCode == 205 && !levelCompleted) {
+                        if (tileCode == 718 && !levelCompleted) {
                             levelComplete();
                             return;
                         } else {
